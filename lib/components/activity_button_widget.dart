@@ -55,7 +55,7 @@ class ActivityButton extends StatelessWidget {
         }, 
         child: Text(
           text,
-          style: TextStyle(color: Colors.white)
+          style: TextStyle(color: Color(0xffFBF1C7))
         ),
       ),
     );

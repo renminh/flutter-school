@@ -38,106 +38,81 @@ class MainApp extends StatelessWidget {
 }
 
 class HomeScreen extends StatelessWidget {
+  /* 
+   * context is an instance of BuildContext, that is
+   * it's the location of the widget in the widget tree
+   */
   const HomeScreen({super.key});
+  
   @override
   Widget build(BuildContext context) {
+    /*
+     * getting the size of the window can be used from the MediaQuery class
+     * https://onlyflutter.com/how-to-get-the-screen-size-in-flutter/
+     * https://api.flutter.dev/flutter/widgets/MediaQueryData-class.html
+     */
+    final Size size = MediaQuery.sizeOf(context);
+    final double width = size.width;
+    final double height = size.height;
+
     return Scaffold(
-      backgroundColor: const Color.fromARGB(0, 54, 52, 51),
       appBar: AppBar(
         title: Text("App by me"),
-        backgroundColor: const Color.fromARGB(255, 76, 74, 73),
+        backgroundColor: Color(0xff1D2021),
         leading: Icon(Icons.account_circle),
-        foregroundColor: Colors.white,
+        foregroundColor: Color(0xffFBF1C7),
         leadingWidth: 100,
       ),
-      body: Center(
-
+      body: Container(
+        height: height,
+        width: width,
+        color: Color(0xff282828),
         /*
          * we can use GridView widget to have multiple children displayed as a grid
          * https://api.flutter.dev/flutter/widgets/GridView-class.html
          */
-        child: Container(
-          width: 500.0, // ideally i should clamp it depending on the screen size
-          //height: 500.0, // no need to set the size
+        child: SizedBox(
+          width: 100,
+          height: 50,
           child: GridView.count(
-          primary: false,
-          mainAxisSpacing: 20.0,
-          padding: EdgeInsets.all(25.0),
-          crossAxisSpacing: 20.0,
-          crossAxisCount: 2,
-          children: <Widget>[
-
+            primary: false,
+            mainAxisSpacing: 20.0,
+            padding: EdgeInsets.all(25.0),
+            crossAxisSpacing: 20.0,
+            crossAxisCount: 2,
             /* 
-             * this is actually so terrible, making a page widget as a parent from a
-             * parent widget. this is not ideally
+             * TODO: read about this since i don't fully understand it yet
+             * https://api.flutter.dev/flutter/rendering/SliverGridDelegateWithFixedCrossAxisCount/childAspectRatio.html
              */
-            ActivityButton(
-              color: Colors.green, 
-              destinationRoute: ActivityPageRoute(
-                appBar: AppBar(
-                  title: Text("nature"),
-                  backgroundColor: const Color.fromARGB(255, 122, 145, 123),
-                  leading: Icon(Icons.account_circle),
-                  foregroundColor: Colors.white,
-                  leadingWidth: 100,
-                ),
-                buttonColor: Colors.green,
-                buttonText: "hi from green! go back home!"
-              ), 
-              text: "Click me to head to the green button!",
-            ),
+            childAspectRatio: 4,
+            children: <Widget>[
+              ActivityButton(
+                color: Color(0xff458588), 
+                destinationRoute: HardwarePage(),
+                text: "Hardware",
+              ),
 
-            ActivityButton(
-              color: Colors.blue, 
-              destinationRoute: ActivityPageRoute(
-                appBar: AppBar(
-                  title: Text("sea"),
-                  backgroundColor: const Color.fromARGB(255, 100, 151, 162),
-                  leading: Icon(Icons.account_circle),
-                  foregroundColor: Colors.white,
-                  leadingWidth: 100,
-                ),
-                buttonColor: Colors.blue,
-                buttonText: "hi from blue! go back home!"
-              ), 
-              text: "Click me to head to the blue button!",
-            ),
+              ActivityButton(
+                color: Color(0xff98971A), 
+                destinationRoute: ResourcePage(),
+                text: "Resources",
+              ),
 
-            ActivityButton(
-              color: Colors.red, 
-              destinationRoute: ActivityPageRoute(
-                appBar: AppBar(
-                  title: Text("fire"),
-                  backgroundColor: const Color.fromARGB(255, 129, 22, 22),
-                  leading: Icon(Icons.account_circle),
-                  foregroundColor: Colors.white,
-                  leadingWidth: 100,
-                ),
-                buttonColor: Colors.red,
-                buttonText: "hi from red! go back home!"
-              ),  
-              text: "Click me to head to the red button!",
-            ),
+              ActivityButton(
+                color: const Color(0xffCC2412), 
+                destinationRoute: OSDevelopmentPage(),
+                text: "OS Development",
+              ),
 
-            ActivityButton(
-              color: Colors.orange, 
-              destinationRoute: ActivityPageRoute(
-                appBar: AppBar(
-                  title: Text("sun"),
-                  backgroundColor: const Color.fromARGB(255, 139, 61, 22),
-                  leading: Icon(Icons.account_circle),
-                  foregroundColor: Colors.white,
-                  leadingWidth: 100,
-                ),
-                buttonColor: Colors.orange,
-                buttonText: "hi from orange! go back home!"
-              ),  
-              text: "Click me to head to the orange button!",
-            ),
-          ],
+              ActivityButton(
+                color: Color(0xffD79921), 
+                destinationRoute: LanguagesPage(),
+                text: "Languages",
+              ),
+            ],
+          ),
         ),
-        ),
-      ),
+      )
     );
   }
 }

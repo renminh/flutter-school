@@ -38,7 +38,7 @@ class GoBackButton extends StatelessWidget {
         onPressed: () { Navigator.pop(context); }, 
         child: Text(
           text,
-          style: TextStyle(color: Colors.white)
+          style: TextStyle(color: Color(0xffFBF1C7))
         ),
       ),
     );
