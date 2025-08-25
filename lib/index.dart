@@ -3,5 +3,5 @@
  * 
  * https://github.com/FlutterFlow/sample-apps/blob/main/ecommerce_flow/lib/index.dart
  */
-export 'pages/green.dart'
-  show GreenRoute;
+export 'pages/activity_page.dart'
+  show ActivityPageRoute;

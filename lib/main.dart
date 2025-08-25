@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'index.dart';
 
+import 'index.dart';
+import 'components/activity_button_widget.dart';
 /*
  * internal documentation for flutter for self learning
  * general flutter directory structure can be followed here
@@ -27,6 +28,7 @@ class MainApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     const String appTitle = 'Flutter app for uni';
+
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: appTitle,
@@ -40,81 +42,103 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color.fromARGB(0, 54, 52, 51),
+      appBar: AppBar(
+        title: Text("App by me"),
+        backgroundColor: const Color.fromARGB(255, 76, 74, 73),
+        leading: Icon(Icons.account_circle),
+        foregroundColor: Colors.white,
+        leadingWidth: 100,
+      ),
       body: Center(
 
         /*
          * we can use GridView widget to have multiple children displayed as a grid
          * https://api.flutter.dev/flutter/widgets/GridView-class.html
          */
-        child: GridView.count(
+        child: Container(
+          width: 500.0, // ideally i should clamp it depending on the screen size
+          //height: 500.0, // no need to set the size
+          child: GridView.count(
           primary: false,
+          mainAxisSpacing: 20.0,
+          padding: EdgeInsets.all(25.0),
+          crossAxisSpacing: 20.0,
           crossAxisCount: 2,
           children: <Widget>[
+
+            /* 
+             * this is actually so terrible, making a page widget as a parent from a
+             * parent widget. this is not ideally
+             */
             ActivityButton(
-              "Click me to head to the green page!",
-              Colors.green,
-              destinationRoute: GreenRoute()
+              color: Colors.green, 
+              destinationRoute: ActivityPageRoute(
+                appBar: AppBar(
+                  title: Text("nature"),
+                  backgroundColor: const Color.fromARGB(255, 122, 145, 123),
+                  leading: Icon(Icons.account_circle),
+                  foregroundColor: Colors.white,
+                  leadingWidth: 100,
+                ),
+                buttonColor: Colors.green,
+                buttonText: "hi from green! go back home!"
+              ), 
+              text: "Click me to head to the green button!",
             ),
 
             ActivityButton(
-              "Click me to head to the red page!",
-              Colors.red,
-              destinationRoute: GreenRoute()
+              color: Colors.blue, 
+              destinationRoute: ActivityPageRoute(
+                appBar: AppBar(
+                  title: Text("sea"),
+                  backgroundColor: const Color.fromARGB(255, 100, 151, 162),
+                  leading: Icon(Icons.account_circle),
+                  foregroundColor: Colors.white,
+                  leadingWidth: 100,
+                ),
+                buttonColor: Colors.blue,
+                buttonText: "hi from blue! go back home!"
+              ), 
+              text: "Click me to head to the blue button!",
             ),
 
             ActivityButton(
-              "Click me to head to the blue page!",
-              Colors.blue,
-              destinationRoute: GreenRoute()
+              color: Colors.red, 
+              destinationRoute: ActivityPageRoute(
+                appBar: AppBar(
+                  title: Text("fire"),
+                  backgroundColor: const Color.fromARGB(255, 129, 22, 22),
+                  leading: Icon(Icons.account_circle),
+                  foregroundColor: Colors.white,
+                  leadingWidth: 100,
+                ),
+                buttonColor: Colors.red,
+                buttonText: "hi from red! go back home!"
+              ),  
+              text: "Click me to head to the red button!",
             ),
 
             ActivityButton(
-              "Click me to head to the orange page!",
-              Colors.orange,
-              destinationRoute: GreenRoute()
+              color: Colors.orange, 
+              destinationRoute: ActivityPageRoute(
+                appBar: AppBar(
+                  title: Text("sun"),
+                  backgroundColor: const Color.fromARGB(255, 139, 61, 22),
+                  leading: Icon(Icons.account_circle),
+                  foregroundColor: Colors.white,
+                  leadingWidth: 100,
+                ),
+                buttonColor: Colors.orange,
+                buttonText: "hi from orange! go back home!"
+              ),  
+              text: "Click me to head to the orange button!",
             ),
           ],
+        ),
         ),
       ),
     );
   }
 }
 
-/*
- * ActivityButton contains the destination route(it'll be passed as an argument during construction)
- * https://stackoverflow.com/questions/71407657/flutter-how-to-pass-a-widget-as-a-parameter
- * 
- * navigation will be done via the  Navigator widget that manages a set of children widgets in a
- * FILO manner(stack) using push and pop
- * https://api.flutter.dev/flutter/widgets/Navigator-class.html
- * docs.flutter.dev/cookbook/navigation/navigation-basics
- */
-class ActivityButton extends StatelessWidget {
-  final String buttonText;
-  final Color color;
-  final Widget destinationRoute;
-
-  const ActivityButton(this.buttonText, this.color, {super.key, required this.destinationRoute});
-
-  @override
-  Widget build(BuildContext context) {
-    /* 
-     * styling an ElevatedButton widget
-     * https://www.kindacode.com/article/working-with-elevatedbutton-in-flutter
-     */
-    return ElevatedButton(
-      style: ElevatedButton.styleFrom(
-        backgroundColor: color,
-      ),
-      onPressed: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute<void>(
-            builder: (context) => destinationRoute,
-          ),
-        );
-      }, 
-      child: Text(buttonText)
-    );
-  }
-}
