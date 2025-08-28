@@ -1,9 +1,9 @@
 import 'package:app_lab/components/go_back_button_widget.dart';
 import 'package:flutter/material.dart';
 
-class LanguagesPage extends StatelessWidget {
+class ActivityThreePage extends StatelessWidget {
 
-  const LanguagesPage({
+  const ActivityThreePage({
     super.key,
   });
 
@@ -15,9 +15,9 @@ class LanguagesPage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text("Languages"),
-        backgroundColor: Color(0xffD79921),
-        leading: Icon(Icons.account_circle_rounded),
+        title: Text("Activity 3"),
+        backgroundColor: Color(0xffCC2412),
+        leading: Icon(Icons.adf_scanner_rounded),
         foregroundColor: Color(0xffFBF1C7),
         leadingWidth: 100,
       ),
@@ -27,7 +27,7 @@ class LanguagesPage extends StatelessWidget {
         color: Color(0xff282828),
         child: Center(
           child: GoBackButton(
-            color: Color(0xffD79921),
+            color: Color(0xffCC2412),
             text: "Go back home",
           ),
         ),

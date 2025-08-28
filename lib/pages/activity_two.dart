@@ -1,9 +1,9 @@
 import 'package:app_lab/components/go_back_button_widget.dart';
 import 'package:flutter/material.dart';
 
-class ResourcePage extends StatelessWidget {
+class ActivityTwoPage extends StatelessWidget {
 
-  const ResourcePage({
+  const ActivityTwoPage({
     super.key,
   });
 
@@ -15,9 +15,9 @@ class ResourcePage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text("Resources"),
-        backgroundColor: Color(0xff98971A),
-        leading: Icon(Icons.compass_calibration_rounded),
+        title: Text("Activity 2"),
+        backgroundColor: Color(0xffD79921),
+        leading: Icon(Icons.account_circle_rounded),
         foregroundColor: Color(0xffFBF1C7),
         leadingWidth: 100,
       ),
@@ -27,7 +27,7 @@ class ResourcePage extends StatelessWidget {
         color: Color(0xff282828),
         child: Center(
           child: GoBackButton(
-            color: Color(0xff98971A),
+            color: Color(0xffD79921),
             text: "Go back home",
           ),
         ),

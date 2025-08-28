@@ -1,9 +1,9 @@
 import 'package:app_lab/components/go_back_button_widget.dart';
 import 'package:flutter/material.dart';
 
-class HardwarePage extends StatelessWidget {
+class ActivityOnePage extends StatelessWidget {
 
-  const HardwarePage({
+  const ActivityOnePage({
     super.key,
   });
 
@@ -15,7 +15,7 @@ class HardwarePage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text("Hardware"),
+        title: Text("Activity 1"),
         backgroundColor: Color(0xff458588),
         leading: Icon(Icons.computer_rounded),
         foregroundColor: Color(0xffFBF1C7),

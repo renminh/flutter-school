@@ -3,14 +3,14 @@
  * 
  * https://github.com/FlutterFlow/sample-apps/blob/main/ecommerce_flow/lib/index.dart
  */
-export 'pages/hardware.dart'
-  show HardwarePage;
+export 'pages/activity_one.dart'
+  show ActivityOnePage;
 
-export 'pages/resources.dart'
-  show ResourcePage;
+export 'pages/activity_four.dart'
+  show ActivityFourPage;
 
-export 'pages/os_development_page.dart'
-  show OSDevelopmentPage;
+export 'pages/activity_three.dart'
+  show ActivityThreePage;
 
-export 'pages/languages.dart'
-  show LanguagesPage;
+export 'pages/activity_two.dart'
+  show ActivityTwoPage;

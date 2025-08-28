@@ -32,6 +32,7 @@ class MainApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: appTitle,
+      // theme: ThemeData(scaffoldBackgroundColor: Color(0xff1D2021)),
       home: HomeScreen(),
     );
   }
@@ -56,8 +57,19 @@ class HomeScreen extends StatelessWidget {
     final double height = size.height;
 
     return Scaffold(
+      backgroundColor: Color(0xff1D2021),
       appBar: AppBar(
-        title: Text("App by me"),
+        title: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text("App by <name>"),
+            Text(
+              "<subtitle>",
+              style: TextStyle(fontSize: 12)
+            ),
+          ],
+        ),
         backgroundColor: Color(0xff1D2021),
         leading: Icon(Icons.account_circle),
         foregroundColor: Color(0xffFBF1C7),
@@ -88,26 +100,26 @@ class HomeScreen extends StatelessWidget {
             children: <Widget>[
               ActivityButton(
                 color: Color(0xff458588), 
-                destinationRoute: HardwarePage(),
-                text: "Hardware",
+                destinationRoute: ActivityOnePage(),
+                text: "Activity 1",
               ),
 
               ActivityButton(
                 color: Color(0xff98971A), 
-                destinationRoute: ResourcePage(),
-                text: "Resources",
+                destinationRoute: ActivityTwoPage(),
+                text: "Activity 2",
               ),
 
               ActivityButton(
                 color: const Color(0xffCC2412), 
-                destinationRoute: OSDevelopmentPage(),
-                text: "OS Development",
+                destinationRoute: ActivityThreePage(),
+                text: "Activity 3",
               ),
 
               ActivityButton(
                 color: Color(0xffD79921), 
-                destinationRoute: LanguagesPage(),
-                text: "Languages",
+                destinationRoute: ActivityFourPage(),
+                text: "Activity 4",
               ),
             ],
           ),

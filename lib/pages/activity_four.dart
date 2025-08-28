@@ -1,9 +1,9 @@
 import 'package:app_lab/components/go_back_button_widget.dart';
 import 'package:flutter/material.dart';
 
-class OSDevelopmentPage extends StatelessWidget {
+class ActivityFourPage extends StatelessWidget {
 
-  const OSDevelopmentPage({
+  const ActivityFourPage({
     super.key,
   });
 
@@ -15,9 +15,9 @@ class OSDevelopmentPage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text("OS Development"),
-        backgroundColor: Color(0xffCC2412),
-        leading: Icon(Icons.adf_scanner_rounded),
+        title: Text("Activity 4"),
+        backgroundColor: Color(0xff98971A),
+        leading: Icon(Icons.compass_calibration_rounded),
         foregroundColor: Color(0xffFBF1C7),
         leadingWidth: 100,
       ),
@@ -27,7 +27,7 @@ class OSDevelopmentPage extends StatelessWidget {
         color: Color(0xff282828),
         child: Center(
           child: GoBackButton(
-            color: Color(0xffCC2412),
+            color: Color(0xff98971A),
             text: "Go back home",
           ),
         ),

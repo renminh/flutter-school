@@ -1,3 +1,3 @@
 # flutter application for school
 
-i'll be attempting to emulate the osdev wiki
+nevermind, i'll just make this look like whatever
