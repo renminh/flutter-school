@@ -1,5 +1,6 @@
-import 'package:app_lab/components/go_back_button_widget.dart';
+import 'package:app_lab/widgets/go_back_button.dart';
 import 'package:flutter/material.dart';
+import '../constants/theme.dart';
 
 class ActivityThreePage extends StatelessWidget {
 
@@ -14,20 +15,21 @@ class ActivityThreePage extends StatelessWidget {
     final double height = size.height;
 
     return Scaffold(
+      backgroundColor: ColorPalette.backgroundDark,
       appBar: AppBar(
         title: Text("Activity 3"),
-        backgroundColor: Color(0xffCC2412),
+        backgroundColor: ColorPalette.page3,
         leading: Icon(Icons.adf_scanner_rounded),
-        foregroundColor: Color(0xffFBF1C7),
+        foregroundColor: ColorPalette.textLight,
         leadingWidth: 100,
       ),
       body: Container(
         width: width,
         height: height,
-        color: Color(0xff282828),
+        //color: ColorPalette.backgroundDark,
         child: Center(
           child: GoBackButton(
-            color: Color(0xffCC2412),
+            color: ColorPalette.page3,
             text: "Go back home",
           ),
         ),

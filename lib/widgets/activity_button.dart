@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../constants/theme.dart';
 /*
  * ActivityButton contains the destination route(it'll be passed as an argument during construction)
  * https://stackoverflow.com/questions/71407657/flutter-how-to-pass-a-widget-as-a-parameter
@@ -12,12 +13,14 @@ class ActivityButton extends StatelessWidget {
   final Color color;
   final Widget destinationRoute;
   final String text;
+  final String description;
 
   const ActivityButton({
     super.key,
     required this.color,
     required this.destinationRoute, 
-    required this.text
+    required this.text,
+    required this.description,
   });
 
   @override
@@ -36,6 +39,7 @@ class ActivityButton extends StatelessWidget {
     return SizedBox(
       height: 50.0,
       width: 50.0,
+
       child: TextButton(
         style: TextButton.styleFrom(
           backgroundColor: color,
@@ -53,10 +57,54 @@ class ActivityButton extends StatelessWidget {
             ),
           );
         }, 
-        child: Text(
-          text,
-          style: TextStyle(color: Color(0xffFBF1C7))
-        ),
+        
+        child: _ActivityButtonContent(
+          text: text,
+          description: description
+        )
+      ),
+    );
+  }
+}
+
+/*
+ * i don't wanna expose this anywhere else so it's private
+ * https://www.geeksforgeeks.org/dart/how-to-create-private-class-in-dart/
+ */
+class _ActivityButtonContent extends StatelessWidget {
+  final String text;
+  final String description;
+
+  const _ActivityButtonContent({
+    super.key,
+    required this.text,
+    required this.description,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    /* https://api.flutter.dev/flutter/widgets/Align-class.html */
+    return Align(
+      alignment: Alignment.bottomLeft,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          Text(
+            text,
+            style: TextStyle(
+              color: ColorPalette.textLight,
+              fontSize: 20,
+            )
+          ),
+          Text(
+            description,
+            style: TextStyle(
+              color: ColorPalette.textLightSubtitle,
+              fontSize: 13,
+            )
+          )
+        ],
       ),
     );
   }

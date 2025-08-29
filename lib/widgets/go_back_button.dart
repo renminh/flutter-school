@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../constants/theme.dart';
 
 class GoBackButton extends StatelessWidget {
   final Color color;
@@ -38,7 +39,7 @@ class GoBackButton extends StatelessWidget {
         onPressed: () { Navigator.pop(context); }, 
         child: Text(
           text,
-          style: TextStyle(color: Color(0xffFBF1C7))
+          style: TextStyle(color: ColorPalette.textLight)
         ),
       ),
     );

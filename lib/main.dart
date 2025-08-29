@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 
 import 'index.dart';
-import 'components/activity_button_widget.dart';
+import 'widgets/activity_button.dart';
+
+import 'constants/theme.dart';
+import 'constants/secret.dart';
 /*
  * internal documentation for flutter for self learning
  * general flutter directory structure can be followed here
@@ -32,18 +35,17 @@ class MainApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: appTitle,
-      // theme: ThemeData(scaffoldBackgroundColor: Color(0xff1D2021)),
-      home: HomeScreen(),
+      home: Home(),
     );
   }
 }
 
-class HomeScreen extends StatelessWidget {
+class Home extends StatelessWidget {
   /* 
    * context is an instance of BuildContext, that is
    * it's the location of the widget in the widget tree
    */
-  const HomeScreen({super.key});
+  const Home({super.key});
   
   @override
   Widget build(BuildContext context) {
@@ -57,75 +59,79 @@ class HomeScreen extends StatelessWidget {
     final double height = size.height;
 
     return Scaffold(
-      backgroundColor: Color(0xff1D2021),
+      backgroundColor: ColorPalette.backgroundDark,
       appBar: AppBar(
         title: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text("App by <name>"),
+            Text(SecretText.header),
             Text(
-              "<subtitle>",
+              SecretText.headerSubtitle,
               style: TextStyle(fontSize: 12)
             ),
           ],
         ),
-        backgroundColor: Color(0xff1D2021),
+        backgroundColor: ColorPalette.header,
         leading: Icon(Icons.account_circle),
-        foregroundColor: Color(0xffFBF1C7),
+        foregroundColor: ColorPalette.textLight,
         leadingWidth: 100,
       ),
-      body: Container(
-        height: height,
-        width: width,
-        color: Color(0xff282828),
-        /*
-         * we can use GridView widget to have multiple children displayed as a grid
-         * https://api.flutter.dev/flutter/widgets/GridView-class.html
-         */
-        child: SizedBox(
-          width: 100,
-          height: 50,
-          child: GridView.count(
-            primary: false,
-            mainAxisSpacing: 20.0,
-            padding: EdgeInsets.all(25.0),
-            crossAxisSpacing: 20.0,
-            crossAxisCount: 2,
-            /* 
-             * TODO: read about this since i don't fully understand it yet
-             * https://api.flutter.dev/flutter/rendering/SliverGridDelegateWithFixedCrossAxisCount/childAspectRatio.html
-             */
-            childAspectRatio: 4,
-            children: <Widget>[
-              ActivityButton(
-                color: Color(0xff458588), 
-                destinationRoute: ActivityOnePage(),
-                text: "Activity 1",
-              ),
-
-              ActivityButton(
-                color: Color(0xff98971A), 
-                destinationRoute: ActivityTwoPage(),
-                text: "Activity 2",
-              ),
-
-              ActivityButton(
-                color: const Color(0xffCC2412), 
-                destinationRoute: ActivityThreePage(),
-                text: "Activity 3",
-              ),
-
-              ActivityButton(
-                color: Color(0xffD79921), 
-                destinationRoute: ActivityFourPage(),
-                text: "Activity 4",
-              ),
-            ],
-          ),
-        ),
-      )
+      body: HomeButtons(),
     );
   }
 }
 
+class HomeButtons extends StatelessWidget {
+  const HomeButtons({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    /* 
+     * this is so infuriating, if grid view does not respect the parent widget's constrains,
+     * then i should just create a container widget that holds row and columns and then
+     * have the buttons adjus according to it
+     */
+    return GridView.count(
+      primary: false,
+      mainAxisSpacing: 20.0,
+      padding: EdgeInsets.all(25.0),
+      crossAxisSpacing: 20.0,
+      crossAxisCount: 2,
+      /* 
+        * TODO: read about this since i don't fully understand it yet
+        * https://api.flutter.dev/flutter/rendering/SliverGridDelegateWithFixedCrossAxisCount/childAspectRatio.html
+        */
+      childAspectRatio: 1,
+      children: <Widget>[
+        ActivityButton(
+          color: ColorPalette.page1, 
+          destinationRoute: ActivityOnePage(),
+          text: "Activity 1",
+          description: "This contains everything about the first activity",
+        ),
+
+        ActivityButton(
+          color: ColorPalette.page2, 
+          destinationRoute: ActivityTwoPage(),
+          text: "Activity 2",
+          description: "This is special because it has the second activity",
+        ),
+
+        ActivityButton(
+          color: ColorPalette.page3, 
+          destinationRoute: ActivityThreePage(),
+          text: "Activity 3",
+          description: "This one is not as special since it's the third activity",
+        ),
+
+        ActivityButton(
+          color: ColorPalette.page4, 
+          destinationRoute: ActivityFourPage(),
+          text: "Activity 4",
+          description: "This one was just added because there needed to be a fourth",
+        ),
+      ],
+    );
+  }
+}
