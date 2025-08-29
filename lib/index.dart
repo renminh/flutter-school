@@ -14,3 +14,6 @@ export 'pages/activity_three.dart'
 
 export 'pages/activity_two.dart'
   show ActivityTwoPage;
+
+export 'pages/music_player.dart'
+  show MusicPlayerPage;

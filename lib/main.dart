@@ -49,15 +49,6 @@ class Home extends StatelessWidget {
   
   @override
   Widget build(BuildContext context) {
-    /*
-     * getting the size of the window can be used from the MediaQuery class
-     * https://onlyflutter.com/how-to-get-the-screen-size-in-flutter/
-     * https://api.flutter.dev/flutter/widgets/MediaQueryData-class.html
-     */
-    final Size size = MediaQuery.sizeOf(context);
-    final double width = size.width;
-    final double height = size.height;
-
     return Scaffold(
       backgroundColor: ColorPalette.backgroundDark,
       appBar: AppBar(
@@ -87,6 +78,16 @@ class HomeButtons extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
+    /*
+     * getting the size of the window can be used from the MediaQuery class
+     * https://onlyflutter.com/how-to-get-the-screen-size-in-flutter/
+     * https://api.flutter.dev/flutter/widgets/MediaQueryData-class.html
+     */
+    final Size size = MediaQuery.sizeOf(context);
+    final double width = size.width;
+    final double height = size.height;
+
     /* 
      * this is so infuriating, if grid view does not respect the parent widget's constrains,
      * then i should just create a container widget that holds row and columns and then
@@ -102,11 +103,11 @@ class HomeButtons extends StatelessWidget {
         * TODO: read about this since i don't fully understand it yet
         * https://api.flutter.dev/flutter/rendering/SliverGridDelegateWithFixedCrossAxisCount/childAspectRatio.html
         */
-      childAspectRatio: 1,
+      childAspectRatio: 1.5,
       children: <Widget>[
         ActivityButton(
           color: ColorPalette.page1, 
-          destinationRoute: ActivityOnePage(),
+          destinationRoute: MusicPlayerPage(),
           text: "Activity 1",
           description: "This contains everything about the first activity",
         ),
