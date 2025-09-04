@@ -10,6 +10,7 @@ dependencies:
   flutter:
     sdk: flutter
   audioplayers: ^6.0.0
+  audiotags: ^1.4.5
 
 dev_dependencies:
   flutter_test:

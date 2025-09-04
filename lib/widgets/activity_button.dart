@@ -76,7 +76,6 @@ class _ActivityButtonContent extends StatelessWidget {
   final String description;
 
   const _ActivityButtonContent({
-    super.key,
     required this.text,
     required this.description,
   });

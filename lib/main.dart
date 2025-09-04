@@ -14,7 +14,7 @@ import 'constants/secret.dart';
  * https://docs.flutter.dev/ui/layout
  * 
  * stateless widget is a widget that contains children and has no mutable state
- */
+ */ 
 
 void main() {
   runApp(const MainApp());
@@ -108,7 +108,7 @@ class HomeButtons extends StatelessWidget {
         ActivityButton(
           color: ColorPalette.page1, 
           destinationRoute: MusicPlayerPage(),
-          text: "Activity 1",
+          text: "Music Player",
           description: "This contains everything about the first activity",
         ),
 

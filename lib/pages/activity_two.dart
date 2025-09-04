@@ -23,7 +23,7 @@ class ActivityTwoPage extends StatelessWidget {
         foregroundColor: ColorPalette.textLight,
         leadingWidth: 100,
       ),
-      body: Container(
+      body: SizedBox(
         width: width,
         height: height,
         //color: ColorPalette.backgroundDark,
