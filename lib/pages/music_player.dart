@@ -10,6 +10,16 @@ class MusicPlayerPage extends StatefulWidget {
   _MusicPlayerState createState() =>_MusicPlayerState();
 }
 
+class Song {
+  SongMetadata metadata;
+  String path;
+
+  Song(
+    this.metadata,
+    this.path,
+  );
+}
+
 // perfect time to have a struct for the meta data
 // prolly be better to wrap the data of the song player as well
 // https://medium.com/@suatozkaya/dart-constructors-101-69c5b9db5230
@@ -33,12 +43,12 @@ class SongMetadata {
 
 class _MusicPlayerState extends State<MusicPlayerPage> {
   final AudioPlayer _audioPlayer = AudioPlayer();
-  SongMetadata songMetadata = SongMetadata(null, null, null, null, null);
+  late List<Song> songs;
 
   int currentIndex = 0;
   bool _isPlaying = false;
-  
-  final List<String> _songs = [
+
+  final List<String> _songPaths = [
     'assets/music/Algo contigo.mp3',
     'assets/music/Eu desespero.mp3',
     'assets/music/Eu seu que vou te amar.mp3',
@@ -49,42 +59,50 @@ class _MusicPlayerState extends State<MusicPlayerPage> {
   void initState() {
     super.initState();
     currentIndex = 0;
-    
-    // having some issues with not being able to play the song
-    // even though the UI shows the metadata loaded
-    // this has to do with async which and initState, which means
-    // i need to preload it along with getting the metadata on first
-    // open of the page
-    _preload();
-    
+    songs = [];
+
+    _initPlayer();  
   }
 
-  Future<void> _preload() async {
-    // metadata for ui
-    await _getMetadata(currentIndex);
+  Future<void> _initPlayer() async {
+    await _getSongs(_songPaths);
 
-    // preload to the audioplayer
-    await _audioPlayer.setSource(
-      AssetSource(_songs[currentIndex].replaceFirst("assets/", "")),
-    );
+    // preload the first song to avoid ui lagging behind
+    // grabbing the songs to audioplayer and audiotags
+    if (songs.isNotEmpty) {
+      await _audioPlayer.setSource(
+        AssetSource(songs[0].path),
+      );
+
+      setState(() {
+        currentIndex = 0;
+      });
+    }
   }
-  Future<void> _getMetadata(int index) async {
-    Tag? tag = await AudioTags.read(_songs[index]);
 
-    setState(() {
-      songMetadata.title = tag?.title;
-      songMetadata.trackArtist = tag?.trackArtist;
-      songMetadata.album = tag?.album;
-      songMetadata.year = tag?.year;
+  Future<void> _getSongs(List<String> songPaths) async {
+    for (int i = 0; i < songPaths.length; i++) {
+      Tag? tag = await AudioTags.read(songPaths[i]);
+      SongMetadata metadata = SongMetadata(null, null, null, null, null);
+
+      metadata.title = tag?.title;
+      metadata.trackArtist = tag?.trackArtist;
+      metadata.album = tag?.album;
+      metadata.year = tag?.year;
       List<Picture>? pictures = tag?.pictures;
-      songMetadata.picture = pictures?[0];
-    });
+      metadata.picture = pictures?[0];
+
+      Song song = Song(
+        metadata,
+        songPaths[i].replaceFirst("assets/", ""),
+      );
+      songs.add(song);
+    }
   }
 
   Future<void> _playSong(int index) async {
-    await _getMetadata(index);
     await _audioPlayer.stop();
-    await _audioPlayer.play(AssetSource(_songs[index].replaceFirst("assets/", "")));
+    await _audioPlayer.play(AssetSource(songs[index].path));
     setState(() {
       currentIndex = index;
       _isPlaying = true;
@@ -103,14 +121,14 @@ class _MusicPlayerState extends State<MusicPlayerPage> {
   }
 
   void _nextSong() {
-    currentIndex = (currentIndex + 1) % _songs.length;
+    currentIndex = (currentIndex + 1) % songs.length;
     setState(() {
       _playSong(currentIndex);
     });
   }
 
   void _prevSong() {
-    currentIndex = (currentIndex - 1) % _songs.length;
+    currentIndex = (currentIndex - 1) % songs.length;
     setState(() {
       _playSong(currentIndex);
     });
@@ -118,7 +136,7 @@ class _MusicPlayerState extends State<MusicPlayerPage> {
 
   void _shuffleSong() {
     /* inclusive <= int < exclusive */
-    currentIndex = Random().nextInt(_songs.length);
+    currentIndex = Random().nextInt(songs.length);
     setState(() {
       _playSong(currentIndex);
     });
@@ -141,12 +159,18 @@ class _MusicPlayerState extends State<MusicPlayerPage> {
   }
 
   Widget getImage() {
-    if (songMetadata.picture == null) {
+  if (songs.isEmpty) {
+     return Icon(Icons.music_note, size: 100,);
+  }
+
+  SongMetadata metadata = songs[currentIndex].metadata; 
+
+    if (metadata.picture == null) {
       return Icon(Icons.music_note, size: 100,);
     }
 
     return Image.memory(
-      songMetadata.picture!.bytes,
+      metadata.picture!.bytes,
       width: 500,
       height: 500,
       fit: BoxFit.cover
@@ -156,12 +180,19 @@ class _MusicPlayerState extends State<MusicPlayerPage> {
   // there has to be a better way rather than setting defaults and making four
   // seperate text objects to accomodate these
   Widget getDetails() {
+    if (songs.isEmpty) {
+    return const Text(
+      "Loading...",
+      style: TextStyle(fontSize: 20, fontWeight: FontWeight.w400),
+    );
+  }
 
+  SongMetadata metadata = songs[currentIndex].metadata; 
     // set defaults
-    String title =  (songMetadata.title == null) ? "Unknown" : songMetadata.title!;
-    String artist = (songMetadata.trackArtist == null) ? "Unknown" : songMetadata.trackArtist!;
-    String album = (songMetadata.album == null) ? "Unknown" : songMetadata.album!;
-    String year = (songMetadata.year == null) ? "Unknown" : songMetadata.year!.toString();
+    String title =  (metadata.title == null) ? "Unknown" : metadata.title!;
+    String artist = (metadata.trackArtist == null) ? "Unknown" : metadata.trackArtist!;
+    String album = (metadata.album == null) ? "Unknown" : metadata.album!;
+    String year = (metadata.year == null) ? "Unknown" : metadata.year!.toString();
     return Column(
       children: [
         Text(
@@ -211,7 +242,7 @@ class _MusicPlayerState extends State<MusicPlayerPage> {
                       context,
                       MaterialPageRoute<void>(
                         builder: (context) => SongListPage(
-                          songs: _songs,
+                          songs: songs,
                           onSongSelected: _playSong
                         ),
                       )
@@ -242,7 +273,7 @@ class _MusicPlayerState extends State<MusicPlayerPage> {
 }
 
 class SongListPage extends StatelessWidget {
-  final List<String> songs;
+  final List<Song> songs;
   final Function(int) onSongSelected;
 
   const SongListPage({super.key, 
@@ -256,10 +287,11 @@ class SongListPage extends StatelessWidget {
       body: ListView.builder(
         itemCount: songs.length,
         itemBuilder: (context, index) {
-          String songName = songs[index].split("/").last;
+          String? songName = songs[index].metadata.title;
 
           return ListTile(
-            title: Text(songName),
+            title: Text(
+              songName!),
             onTap: () {
               onSongSelected(index);
               Navigator.pop(context);
