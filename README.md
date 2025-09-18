@@ -5,7 +5,9 @@ nevermind, i'll just make this look like whatever
 project structure also taken from this:
 
 https://medium.com/@logeshgcp/understanding-the-flutter-project-structure-84de4ec3ce5f
+https://mohammedshamseerpv.medium.com/flutter-folder-structure-and-coding-standards-best-practices-for-scalable-apps-1355ec5c53db
 
-# linux debug
+
+## linux debug
 audioplayers relies on gstreamer
 ensure that it's installed as well as its respective plugins
