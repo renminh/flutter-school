@@ -81,14 +81,16 @@ class Mp3Card extends StatelessWidget {
 	@override
 	Widget build(BuildContext context) 
 	{
-		double coverMin = 300;
+		double screenWidth = MediaQuery.sizeOf(context).width;
+		double coverMin = 200;
 		double coverMax = 600;
+		double coverSize = DCLAMP(coverMin, coverMax, screenWidth * 0.5);
 		return Column(
 			children: [
 				// https://api.flutter.dev/flutter/widgets/Image/Image.memory.html
 				Mp3Cover(
 					song: playerGetCurrentSong(playback), 
-					size: clampd(coverMin, coverMax, MediaQuery.of(context).size.width),
+					size: coverSize,
 				),
 				Mp3Details(song: playerGetCurrentSong(playback)),
 				Mp3Controls(

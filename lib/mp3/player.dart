@@ -3,6 +3,7 @@ import 'package:audiotags/audiotags.dart';
 
 import 'dart:math';
 import 'types.dart';
+import '../util/util.dart';
 
 Future<void> playerInitialize(AudioPlayer player, Playback playback, List<String> songPaths) async
 {
@@ -86,9 +87,7 @@ Song? playerGetSong(Playback playback, int index)
 {
 	if (playback.songs.isEmpty) return null;
 
-	int min = 0;
-	int max = playback.songs.length - 1;
-	index = (index < min) ? min : (index > max) ? max : index;
+	index = ICLAMP(0, playback.songs.length - 1, index);
 	return playback.songs[index];
 }
 
@@ -97,26 +96,22 @@ Song? playerGetCurrentSong(Playback playback)
 	return playerGetSong(playback, playback.songIndex);
 }
 
-/*
- * no need to look at these static functions:)
- */
+/* no need to look at these static functions :) */
+
 Future<void> _getSongs(Playback playback, List<String> songPaths) async
 {
 	for (int i = 0; i < songPaths.length; i++) {
 		Tag? tag = await AudioTags.read(songPaths[i]);
 		SongMetadata metadata = SongMetadata(null, null, null, null, null);
 
-		metadata.title = tag?.title != null ? tag!.title : "Unkown Track";
-		metadata.trackArtist = tag?.trackArtist != null ? tag!.trackArtist : "Unknown Artist";
-		metadata.album = tag?.album != null ? tag!.album : "Unkown Album";
-		metadata.year = (tag?.year != null ? tag!.year : "Unkown Year") as int?;
 		List<Picture>? pictures = tag?.pictures;
 		metadata.picture = pictures?[0];
+		metadata.title =		STR_OR(tag?.title, "Unknown Track");
+		metadata.trackArtist =	STR_OR(tag?.trackArtist, "Unknown Artist");
+		metadata.album =		STR_OR(tag?.album, "Unknown Album");
+		metadata.year =			INT_OR(tag?.year, 1900);
 
-		Song song = Song(
-		metadata,
-		songPaths[i].replaceFirst("assets/", ""),
-		);
+		Song song = Song(metadata, songPaths[i].replaceFirst("assets/", ""));
 		playback.songs.add(song);
 	}
 }
