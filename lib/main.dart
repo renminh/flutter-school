@@ -1,53 +1,56 @@
 import 'package:flutter/material.dart';
 
-import 'index.dart';
-import 'widgets/activity_button.dart';
-import 'constants/theme.dart';
-import 'constants/secret.dart';
 
-void main() {
+import 'pages/activity_four.dart' show ActivityFourPage;
+import 'pages/activity_three.dart' show ActivityThreePage;
+import 'pages/activity_two.dart' show ActivityTwoPage;
+import 'mp3/player_page.dart' show PlayerPage;
+  
+import 'common/activity_button.dart';
+import 'theme.dart';
+import 'secret.dart';
+
+void main() 
+{
   runApp(const MainApp());
 }
 
-/*
- * necessary to seperate main app and MaterialApp because
- * of builder context that Navigator uses. Navigator
- * shouldn't be in the same level with MaterialApp
- * https://github.com/flutter/flutter/issues/15919
- */
 class MainApp extends StatelessWidget {
-  const MainApp({super.key});
-  @override
-  Widget build(BuildContext context) {
-    const String appTitle = 'Flutter app for uni';
+	const MainApp({super.key});
+	@override
+	Widget build(BuildContext context)
+	{
+		const String appTitle = 'Flutter app for uni';
 
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: appTitle,
-      home: Home(),
-    );
-  }
+		return MaterialApp(
+			debugShowCheckedModeBanner: false,
+			title: appTitle,
+			home: Home(),
+			);
+	}
 }
 
 class Home extends StatelessWidget {
-  const Home({super.key});
-  
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: ColorPalette.backgroundDark,
-      appBar: HomeAppBar(),
-      body: HomeButtons(),
-    );
-  }
+	const Home({super.key});
+	
+	@override
+	Widget build(BuildContext context)
+	{
+		return Scaffold(
+		backgroundColor: ColorPalette.backgroundDark,
+		appBar: HomeAppBar(),
+		body: HomeButtons(),
+		);
+	}
 }
 
 class HomeButtons extends StatelessWidget {
   const HomeButtons({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    // don't use gridview, i need to replace this to customize the home page
+  Widget build(BuildContext context)
+  {
+
     return GridView.count(
       primary: false,
       mainAxisSpacing: 20.0,
@@ -58,7 +61,7 @@ class HomeButtons extends StatelessWidget {
       children: <Widget>[
         ActivityButton(
           color: ColorPalette.page1, 
-          destinationRoute: MusicPlayerPage(),
+          destinationRoute: PlayerPage(),
           text: "Music Player",
           description: "...",
         ),
@@ -87,9 +90,7 @@ class HomeButtons extends StatelessWidget {
     );
   }
 }
-// https://www.geeksforgeeks.org/dart/dart-extends-vs-with-vs-implements/
-// widget is the class
-// PreferredSizeWidget? is the interface
+
 class HomeAppBar extends StatelessWidget implements PreferredSizeWidget{
   const HomeAppBar({super.key});
 
@@ -99,7 +100,8 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget{
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context)
+  {
     return AppBar(
       title: Column(
         mainAxisAlignment: MainAxisAlignment.center,

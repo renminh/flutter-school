@@ -1,6 +1,6 @@
-import 'package:app_lab/widgets/go_back_button.dart';
+import 'package:app_lab/common/go_back_button.dart';
 import 'package:flutter/material.dart';
-import '../constants/theme.dart';
+import '../theme.dart';
 
 class ActivityTwoPage extends StatelessWidget {
 

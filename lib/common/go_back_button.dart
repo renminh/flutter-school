@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../constants/theme.dart';
+import '../theme.dart';
 
 class GoBackButton extends StatelessWidget {
   final Color color;

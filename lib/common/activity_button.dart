@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../constants/theme.dart';
+import '../theme.dart';
 /*
  * ActivityButton contains the destination route(it'll be passed as an argument during construction)
  * https://stackoverflow.com/questions/71407657/flutter-how-to-pass-a-widget-as-a-parameter

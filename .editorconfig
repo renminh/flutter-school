@@ -1,4 +1,4 @@
-# EditorConfig is awesome: https://editorconfig.org
+# EditorConfig is awesome: https://EditorConfig.org
 
 # top-most EditorConfig file
 root = true
@@ -8,11 +8,8 @@ root = true
 end_of_line = lf
 insert_final_newline = true
 
-# 2 space indentation
-[*.dart]
-indent_style = space
-indent_size = 2
-
-# Tab indentation (no size specified)
-[Makefile]
+[*]
 indent_style = tab
+indent_size = 4
+charset = utf-8
+trim_trailing_whitespace = false
