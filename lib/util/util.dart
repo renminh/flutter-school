@@ -21,3 +21,4 @@ double DMAX(double a, double b) => (a > b) ? a : b;
 String STR_OR(String? input, String fallback) => (input!= null) ? input : fallback;
 int INT_OR(int? input, int fallback) => (input != null) ? input : fallback;
 
+

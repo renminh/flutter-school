@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 
 class ColorPalette {
-	/* 
+	/*
 	* on the use of keyword: static
 	* https://medium.com/@yetesfadev/mastering-static-in-flutter-and-dart-3bd21a60fa48
 	*/
-	static const Color backgroundLight = Color(0xfffff9ee);
-	static const Color backgroundDark = Color(0xff323531);
+	static const Color backgroundDark = Color(0xff090C08);
 
 	static const Color header = Color(0xff292b29);
 	static const Color textDark = Color(0xff000000);

@@ -1,6 +1,5 @@
 import 'package:audioplayers/audioplayers.dart';
 import 'package:audiotags/audiotags.dart';
-
 import 'dart:math';
 import 'types.dart';
 import '../util/util.dart';
@@ -20,10 +19,7 @@ Future<void> playerInitialize(AudioPlayer player, Playback playback, List<String
 
 Future<void> playerPlay(AudioPlayer player, Playback playback, int index) async
 {
-	int min = 0;
-  	int max = playback.songs.length - 1;
-  	index = (index < min) ? min : (index > max) ? max : index;
-
+	index = ICLAMP(0, playback.songs.length - 1, index);
   	await player.stop();
   	await player.play(AssetSource(playback.songs[index].path));
   	playback.playing = true;
@@ -39,7 +35,7 @@ Future<void> playerPlay(AudioPlayer player, Playback playback, int index) async
 Future<void> playerPrevious(AudioPlayer player, Playback playback) async
 {
 	int index = (playback.songIndex - 1) % playback.songs.length;
-	await playerPlay(player, playback, index);  
+	await playerPlay(player, playback, index);
 }
 
 Future<void> playerTogglePlayPause(AudioPlayer player, Playback playback) async
@@ -70,7 +66,10 @@ Future<void> playerResume(AudioPlayer player, Playback playback) async
 
  Future<void> playerShuffle(AudioPlayer player, Playback playback) async
 {
+	if (playback.songs.length <= 1) return;
+
 	int index = 0;
+
 	do {
 		index = Random().nextInt(playback.songs.length);
 	} while (index == playback.songIndex);
@@ -78,15 +77,15 @@ Future<void> playerResume(AudioPlayer player, Playback playback) async
 	await playerPlay(player, playback, index);
 }
 
-void playerDestroy(AudioPlayer player)
+Future<void> playerDestroy(AudioPlayer player) async
 {
-	player.stop();
+	await player.stop();
+	await player.dispose();
 }
 
 Song? playerGetSong(Playback playback, int index)
 {
 	if (playback.songs.isEmpty) return null;
-
 	index = ICLAMP(0, playback.songs.length - 1, index);
 	return playback.songs[index];
 }
@@ -101,6 +100,7 @@ Song? playerGetCurrentSong(Playback playback)
 Future<void> _getSongs(Playback playback, List<String> songPaths) async
 {
 	for (int i = 0; i < songPaths.length; i++) {
+		print("loading ${songPaths[i]}");
 		Tag? tag = await AudioTags.read(songPaths[i]);
 		SongMetadata metadata = SongMetadata(null, null, null, null, null);
 

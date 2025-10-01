@@ -4,13 +4,14 @@ import 'package:flutter/material.dart';
 import 'pages/activity_four.dart' show ActivityFourPage;
 import 'pages/activity_three.dart' show ActivityThreePage;
 import 'pages/activity_two.dart' show ActivityTwoPage;
-import 'mp3/player_page.dart' show PlayerPage;
-  
+import 'mp3/ui.dart' show PlayerPage;
+
 import 'common/activity_button.dart';
 import 'theme.dart';
 import 'secret.dart';
+import 'theme/dark.dart';
 
-void main() 
+void main()
 {
   runApp(const MainApp());
 }
@@ -26,20 +27,21 @@ class MainApp extends StatelessWidget {
 			debugShowCheckedModeBanner: false,
 			title: appTitle,
 			home: Home(),
-			);
+			theme: darkMode,
+		);
 	}
 }
 
 class Home extends StatelessWidget {
 	const Home({super.key});
-	
+
 	@override
 	Widget build(BuildContext context)
 	{
 		return Scaffold(
-		backgroundColor: ColorPalette.backgroundDark,
-		appBar: HomeAppBar(),
-		body: HomeButtons(),
+			backgroundColor: Theme.of(context).colorScheme.surface,
+			appBar: HomeAppBar(),
+			body: HomeButtons(),
 		);
 	}
 }
@@ -60,28 +62,24 @@ class HomeButtons extends StatelessWidget {
       childAspectRatio: 1.5,
       children: <Widget>[
         ActivityButton(
-          color: ColorPalette.page1, 
           destinationRoute: PlayerPage(),
           text: "Music Player",
-          description: "...",
+          description: "play music",
         ),
 
         ActivityButton(
-          color: ColorPalette.page2, 
           destinationRoute: ActivityTwoPage(),
           text: "Activity 2",
           description: "This is special because it has the second activity",
         ),
 
         ActivityButton(
-          color: ColorPalette.page3, 
           destinationRoute: ActivityThreePage(),
           text: "Activity 3",
           description: "This one is not as special since it's the third activity",
         ),
 
         ActivityButton(
-          color: ColorPalette.page4, 
           destinationRoute: ActivityFourPage(),
           text: "Activity 4",
           description: "This one was just added because there needed to be a fourth",
