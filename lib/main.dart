@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'pages/activity_four.dart' show ActivityFourPage;
 import 'pages/activity_three.dart' show ActivityThreePage;
 import 'pages/activity_two.dart' show ActivityTwoPage;
-import 'mp3/ui.dart' show PlayerPage;
+import 'mp3/player_page.dart' show PlayerPage;
 
 import 'common/activity_button.dart';
 import 'theme.dart';
@@ -13,7 +13,7 @@ import 'theme/dark.dart';
 
 void main()
 {
-  runApp(const MainApp());
+	runApp(const MainApp());
 }
 
 class MainApp extends StatelessWidget {

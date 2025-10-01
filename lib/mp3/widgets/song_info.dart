@@ -4,10 +4,7 @@ import '../types.dart';
 class SongInfo extends StatelessWidget {
 	final Song? song;
 
-	const SongInfo({
-		super.key,
-		this.song
-	});
+	const SongInfo({super.key, this.song});
 
 	@override
 	Widget build(BuildContext context) {
