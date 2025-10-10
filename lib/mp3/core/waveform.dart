@@ -1,11 +1,12 @@
 import 'dart:io';
 import 'dart:math';
 import 'dart:typed_data';
+import 'package:path_provider/path_provider.dart';
+
 import '../../util/util.dart';
 
 /* --------------------------------------------------------------------------
  * apis for waveform extraction used together with waveform widget.
- * Also includes a global cache for waveform
  */
 
 final Map<String, WaveformInterface> waveformCache = {};
@@ -20,25 +21,22 @@ class WaveformInterface {
 	// progress is normalized
 	double progress = 0.0;
 	double height;
+	Duration? duration;
 
 	WaveformInterface({
 		required this.path,
 		this.height = 60,
-		this.samples = 500,
+		this.samples = 80,
 		this.scale = 0.5,
+		this.duration,
 		this.mirrored = true,
-  });
+  	});
 }
 
-Future<void> waveformExtract(WaveformInterface wf) async
-{
-	final tempFile = File('${wf.path}.pcm');
-	/*
-	 * overwrite w/o asking,
-	 * force ouput to s16le (little endian)
-	 * set up monochannel
-	 * set sample rate to 44100hz
-	 */
+Future<void> waveformExtract(WaveformInterface wf) async {
+	final tempDir = await getTemporaryDirectory();
+	final tempFile = File('${tempDir.path}/${DateTime.now().millisecondsSinceEpoch}.pcm');
+
 	final result = await Process.run('ffmpeg', [
 		'-y',
 		'-i',
@@ -53,7 +51,6 @@ Future<void> waveformExtract(WaveformInterface wf) async
 	]);
 
 	if (result.exitCode != 0) {
-		// ignore: avoid_print
 		print("FFmpeg error: ${result.stderr}");
 		return;
 	}
@@ -74,13 +71,12 @@ Future<void> waveformExtract(WaveformInterface wf) async
 
 	final maxSample = downsampled.reduce(max);
 	wf.waveform = downsampled.map((e) => e / maxSample).toList();
-
 	await tempFile.delete();
 }
 
 void waveformSetProgress(WaveformInterface wf, double progress)
 {
-  wf.progress = DCLAMP(0.0, 1.0, progress);
+	wf.progress = DCLAMP(0.0, 1.0, progress);
 }
 
 Future<WaveformInterface> getWaveform(String path) async
@@ -88,6 +84,7 @@ Future<WaveformInterface> getWaveform(String path) async
 	if (waveformCache.containsKey(path)) return waveformCache[path]!;
 
 	final wf = WaveformInterface(path: path);
+	wf.progress = 0.0;
 	await waveformExtract(wf);
 	waveformCache[path] = wf;
 	return wf;

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../types.dart';
+import '../../core/song.dart';
 
 
 class SongCover extends StatelessWidget {

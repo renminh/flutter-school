@@ -3,28 +3,40 @@
 import 'package:audioplayers/audioplayers.dart';
 import 'package:audiotags/audiotags.dart';
 import 'package:flutter/material.dart';
-import 'package:palette_generator/palette_generator.dart';
 import 'dart:math';
-import '../types.dart';
+import 'song.dart';
 import '../../util/util.dart';
 
-
-const int _SAMPLE_SIZE_COVER = 32;
-const int _SAMPLE_SIZE_GRADIENT = 5;
+typedef PlayerHandle = AudioPlayer;
 
 class PlayerInterface {
-	final AudioPlayer player;
+	final PlayerHandle player;
 	final Playback playback;
-	final Map<String, List<Color>> gradientCache = {};
-
-	Color color1 = Colors.grey.shade800;
-	Color color2 = Colors.grey.shade600;
 
 	PlayerInterface({
 		required this.player,
 		required this.playback
 	});
 }
+
+class Playback {
+	final List<Song> songs;
+	int songIndex;
+	bool playing;
+	bool shuffle;
+	Duration position;
+  	Duration duration;
+
+	Playback({
+		required this.songs,
+		this.songIndex = 0,
+		this.playing = false,
+		this.shuffle = false,
+		this.position = Duration.zero,
+    	this.duration = Duration.zero,
+	});
+}
+
 
 /* --------------------------------------------------------------------------
  * apis for the actual logic without necessarily touching the UI
@@ -42,6 +54,8 @@ Future<void> playerInitialize(AudioPlayer player, Playback playback, List<String
 		playback.songIndex = 0;
 		playback.playing = false;
 		playback.shuffle = false;
+		playback.duration = await player.getDuration() ?? Duration.zero;
+		playback.position = Duration.zero;
 	}
 }
 
@@ -123,12 +137,6 @@ Song? playerGetCurrentSong(Playback playback)
 	return playerGetSong(playback, playback.songIndex);
 }
 
-Duration progressToDuration(Duration totalDuration, double progress)
-{
-	final clamped = DCLAMP(0.0, 1.0, progress);
-	return Duration(milliseconds: (totalDuration.inMilliseconds * clamped).toInt());
-}
-
 /* --------------------------------------------------------------------------
  * apis for the ui wrappers that should be used whenever state-changing
  * functions require the UI to be rebuilt
@@ -137,19 +145,16 @@ Duration progressToDuration(Duration totalDuration, double progress)
 Future<void> uiPlaySong(PlayerInterface interface, int index, VoidCallback refresh) async
 {
 	await _WRAPUI(() => playerPlay(interface.player, interface.playback, index), refresh);
-	_UPDATE_COLOR_GRADIENT(interface);
 }
 
 Future<void> uiNextSong(PlayerInterface interface, VoidCallback refresh) async
 {
 	await _WRAPUI(() => playerNext(interface.player, interface.playback), refresh);
-	_UPDATE_COLOR_GRADIENT(interface);
 }
 
 Future<void> uiPrevSong(PlayerInterface interface, VoidCallback refresh) async
 {
 	await _WRAPUI(() => playerPrevious(interface.player, interface.playback), refresh);
-	_UPDATE_COLOR_GRADIENT(interface);
 }
 
 Future<void> uiTogglePlayPause(PlayerInterface interface, VoidCallback refresh) async
@@ -160,7 +165,6 @@ Future<void> uiTogglePlayPause(PlayerInterface interface, VoidCallback refresh) 
 Future<void> uiShuffleSong(PlayerInterface interface, VoidCallback refresh) async
 {
 	await _WRAPUI(() => playerShuffle(interface.player, interface.playback), refresh);
-	_UPDATE_COLOR_GRADIENT(interface);
 }
 
 Future<void> uiSeek(PlayerInterface interface, Duration pos, VoidCallback refresh) async
@@ -168,31 +172,6 @@ Future<void> uiSeek(PlayerInterface interface, Duration pos, VoidCallback refres
 	await _WRAPUI(() => interface.player.seek(pos), refresh);
 	interface.playback.position = pos;
 }
-
-Future<void> computeSongGradient(PlayerInterface interface, Song song) async
-{
-	if (song.metadata.picture == null) {
-		interface.gradientCache[song.path] = [Colors.grey.shade800, Colors.grey.shade600];
-		return;
-	}
-
-	final palette = await PaletteGenerator.fromImageProvider(
-		ResizeImage(
-			MemoryImage(song.metadata.picture!.bytes),
-				width: _SAMPLE_SIZE_COVER,
-				height: _SAMPLE_SIZE_COVER,
-		),
-		maximumColorCount: _SAMPLE_SIZE_GRADIENT,
-	);
-
-	final c1 = palette.dominantColor?.color ?? Colors.grey.shade800;
-	final c2 = palette.colors.length > 1
-		? palette.colors.elementAt(1)
-		: palette.dominantColor?.color ?? Colors.grey.shade600;
-
-  	interface.gradientCache[song.path] = [_MUTECOLOR(c1), _MUTECOLOR(c2)];
-}
-
 
 /* no need to look at these static functions :) */
 Future<void> _GETSONGS(Playback playback, List<String> songPaths) async
@@ -212,25 +191,6 @@ Future<void> _GETSONGS(Playback playback, List<String> songPaths) async
 		Song song = Song(metadata, songPaths[i].replaceFirst("assets/", ""));
 		playback.songs.add(song);
 	}
-}
-
-void _UPDATE_COLOR_GRADIENT(PlayerInterface interface)
-{
-	final song = playerGetCurrentSong(interface.playback);
-	if (song == null) return;
-	if (interface.gradientCache.containsKey(song.path)) {
-		final colors = interface.gradientCache[song.path]!;
-		interface.color1 = colors[0];
-		interface.color2 = colors[1];
-	}
-}
-
-Color _MUTECOLOR(Color color, {double saturationFactor = 0.3, double brightnessFactor = 0.8})
-{
-	final hsl = HSLColor.fromColor(color);
-	final muted = hsl.withSaturation(hsl.saturation * saturationFactor)
-		.withLightness(hsl.lightness * brightnessFactor);
-	return muted.toColor();
 }
 
 /* generic wrapper to refresh UI using setState() */

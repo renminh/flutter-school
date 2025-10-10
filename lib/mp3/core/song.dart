@@ -13,24 +13,6 @@ class SongRepository {
 	];
 }
 
-class Playback {
-	final List<Song> songs;
-	int songIndex;
-	bool playing;
-	bool shuffle;
-	Duration position;
-  	Duration duration;
-
-	Playback({
-		required this.songs,
-		this.songIndex = 0,
-		this.playing = false,
-		this.shuffle = false,
-		this.position = Duration.zero,
-    	this.duration = Duration.zero,
-	});
-}
-
 class Song {
 	SongMetadata metadata;
 	String path;
