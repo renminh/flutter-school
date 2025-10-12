@@ -1,4 +1,4 @@
-import 'package:app_lab/mp3/core/player.dart';
+import 'package:app_lab/mp3/player.dart';
 import 'package:flutter/material.dart';
 import '../track.dart';
 

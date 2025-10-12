@@ -2,4 +2,9 @@ run:
 	flutter run
 
 configure:
-	flutter clean && flutter pub get
+	flutter clean
+	flutter channel master
+	flutter upgrade
+	flutter pub get
+	
+	

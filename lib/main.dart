@@ -1,5 +1,5 @@
+import 'package:app_lab/config.dart';
 import 'package:flutter/material.dart';
-import 'package:app_lab/util/responsive.dart';
 import 'theme/dark.dart';
 import 'secret.dart';
 import 'mp3/ui/player.dart' show PlayerPage;
@@ -8,15 +8,16 @@ void main() =>	runApp(const MainApp());
 
 class MainApp extends StatelessWidget {
 	const MainApp({super.key});
+
 	@override
 	Widget build(BuildContext context)
 	{
-		const String appTitle = 'Flutter app for uni';
+		const String app_title = 'Flutter Demo for Mobile Development';
 
 		return MaterialApp(
 			debugShowCheckedModeBanner: false,
 			theme: darkMode,
-			title: appTitle,
+			title: app_title,
 			home: Home(),
 		);
 	}
@@ -28,46 +29,45 @@ class Home extends StatelessWidget {
 	@override
 	Widget build(BuildContext context)
 	{
-		final responsive = Responsive(context);
+		final screen_width = MediaQuery.sizeOf(context).width;
 
 		return Scaffold(
 			backgroundColor: Theme.of(context).colorScheme.surface,
 			appBar: HomeAppBar(),
-			body: GridView.count(
-				primary: false,
-				padding: responsivePadding(responsive.screenWidth),
-				mainAxisSpacing: 10,
-				childAspectRatio:  responsive.isMobile() ? 1.0 : 1.3,
-				crossAxisSpacing: 10,
-				crossAxisCount: responsiveGridAxisCount(responsive.screenWidth),
-				children: buildGridChildren(context, 16),
-			)
+			body: screen_width < MOBILE_MAX_WIDTH
+				? build_mobile(context)
+				: build_mobile(context),
 		);
 	}
 }
 
-EdgeInsets responsivePadding(double width)
+Widget build_mobile(context)
 {
-	return width < 800
-		? EdgeInsets.all(12)
-		: EdgeInsets.symmetric(horizontal: 86, vertical: 16);
+	return GridView.count(
+		primary: false,
+			padding: EdgeInsets.all(12),
+			mainAxisSpacing: 10,
+			childAspectRatio: 1.3,
+			crossAxisSpacing: 10,
+			crossAxisCount: 1,
+			children: build_grid_children(context),
+	);
 }
 
-double responsiveFontSize(double width)
+Widget build_desktop(context)
 {
-	return width < 600
-		? 16
-		: 20;
+	return GridView.count(
+		primary: false,
+			padding: EdgeInsets.all(20),
+			mainAxisSpacing: 10,
+			childAspectRatio: 1,
+			crossAxisSpacing: 10,
+			crossAxisCount: 2,
+			children: build_grid_children(context),
+	);
 }
 
-int responsiveGridAxisCount(double width)
-{
-	return width < 500
-		? 1
-		: 2;
-}
-
-List<Widget> buildGridChildren(BuildContext context, double dynamicFontSize)
+List<Widget> build_grid_children(BuildContext context)
 {
 
 	return <Widget>[
@@ -133,8 +133,6 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget{
 					),
 				],
 			),
-			// backgroundColor: ColorPalette.header,
-			// leading: Icon(Icons.account_circle),
 			leadingWidth: 100,
 		);
   	}

@@ -1,0 +1,1 @@
+double MOBILE_MAX_WIDTH = 600;

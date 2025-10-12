@@ -1,19 +1,16 @@
-// ignore_for_file: non_constant_identifier_names, constant_identifier_names
-
 import 'package:audioplayers/audioplayers.dart';
 import 'package:audiotags/audiotags.dart';
 import 'package:flutter/material.dart';
 import 'dart:math';
-import 'song.dart';
-import '../../util/util.dart';
+import 'core/song.dart';
+import '../util/util.dart';
 
-typedef PlayerHandle = AudioPlayer;
 
-class PlayerInterface {
-	final PlayerHandle player;
+class PlayerContext {
+	final AudioPlayer player;
 	final Playback playback;
 
-	PlayerInterface({
+	PlayerContext({
 		required this.player,
 		required this.playback
 	});
@@ -21,7 +18,7 @@ class PlayerInterface {
 
 class Playback {
 	final List<Song> songs;
-	int songIndex;
+	int song_index;
 	bool playing;
 	bool shuffle;
 	Duration position;
@@ -29,7 +26,7 @@ class Playback {
 
 	Playback({
 		required this.songs,
-		this.songIndex = 0,
+		this.song_index = 0,
 		this.playing = false,
 		this.shuffle = false,
 		this.position = Duration.zero,
@@ -136,43 +133,6 @@ Song? playerGetCurrentSong(Playback playback)
 {
 	return playerGetSong(playback, playback.songIndex);
 }
-
-/* --------------------------------------------------------------------------
- * apis for the ui wrappers that should be used whenever state-changing
- * functions require the UI to be rebuilt
- */
-
-Future<void> uiPlaySong(PlayerInterface interface, int index, VoidCallback refresh) async
-{
-	await _WRAPUI(() => playerPlay(interface.player, interface.playback, index), refresh);
-}
-
-Future<void> uiNextSong(PlayerInterface interface, VoidCallback refresh) async
-{
-	await _WRAPUI(() => playerNext(interface.player, interface.playback), refresh);
-}
-
-Future<void> uiPrevSong(PlayerInterface interface, VoidCallback refresh) async
-{
-	await _WRAPUI(() => playerPrevious(interface.player, interface.playback), refresh);
-}
-
-Future<void> uiTogglePlayPause(PlayerInterface interface, VoidCallback refresh) async
-{
-	await _WRAPUI(() => playerTogglePlayPause(interface.player, interface.playback), refresh);
-}
-
-Future<void> uiShuffleSong(PlayerInterface interface, VoidCallback refresh) async
-{
-	await _WRAPUI(() => playerShuffle(interface.player, interface.playback), refresh);
-}
-
-Future<void> uiSeek(PlayerInterface interface, Duration pos, VoidCallback refresh) async
-{
-	await _WRAPUI(() => interface.player.seek(pos), refresh);
-	interface.playback.position = pos;
-}
-
 /* no need to look at these static functions :) */
 Future<void> _GETSONGS(Playback playback, List<String> songPaths) async
 {

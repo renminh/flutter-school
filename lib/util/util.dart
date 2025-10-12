@@ -1,12 +1,12 @@
 // ignore_for_file: non_constant_identifier_names
-int ICLAMP(int min, int max, int value)
+int CLAMPI(int min, int max, int value)
 {
 	return (min < max)
 		? ((value < min) ? min : ((value > max) ? max : value))
 		: ((value < max) ? max : ((value > min) ? min : value));
 }
 
-double DCLAMP(double min, double max, double value)
+double CLAMPD(double min, double max, double value)
 {
 	return (min < max)
 		? ((value < min) ? min : ((value > max) ? max : value))

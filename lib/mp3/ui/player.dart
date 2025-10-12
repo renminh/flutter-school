@@ -8,17 +8,13 @@ import '../core/song.dart';
 import 'widgets/cover.dart';
 import 'widgets/song_info.dart';
 import 'widgets/control.dart';
-import 'widgets/waveform.dart';
-import '../../util/util.dart';
 import '../../util/responsive.dart';
-import 'track.dart';
 
-import 'package:app_lab/mp3/core/player.dart';
+import 'package:app_lab/mp3/player.dart';
 import 'package:app_lab/mp3/core/waveform.dart';
 
 const double _COVERSIZEMIN = 30;
 const double _COVERSIZEMAX = 310;
-const double _WAVEFORMHEIGHT = 120;
 
 class PlayerPage extends StatefulWidget {
   const PlayerPage({super.key});
@@ -159,8 +155,6 @@ class PlayerPageState extends State<PlayerPage> {
 		double t = (responsive.screenWidth / 600).clamp(0.0, 1.0);
 		double coverWidth = _COVERSIZEMIN + (_COVERSIZEMAX - _COVERSIZEMIN) * t;
 		coverWidth = coverWidth.clamp(_COVERSIZEMIN, _COVERSIZEMAX);
-		double waveformWidth = coverWidth * 0.9;
-		double waveformHeight = _WAVEFORMHEIGHT * (0.8 + 0.2 * t);
 
 		return SingleChildScrollView(
 			child: Column(
@@ -168,33 +162,8 @@ class PlayerPageState extends State<PlayerPage> {
 				children: [
 					SongCover(song: song, size: coverWidth),
 					SongInfo(song: song),
-					if (wf != null)
-					buildWaveform(wf, waveformHeight, waveformWidth),
 					buildPlaybackControl(),
 				],
-			),
-		);
-	}
-
-
-	Widget buildWaveform(WaveformInterface wf, double wfHeight, double wfWidth)
-	{
-		return SizedBox(
-			width: wfWidth,
-			height: wfHeight,
-			child: Waveform(
-				wf: wf,
-				color: Color(0xff254887),
-				overrideHeight: wfHeight,
-				onSeek: (progress) {
-					final newPos = Duration(
-						milliseconds: (interface.playback.duration.inMilliseconds * progress).toInt(),
-					);
-					waveformSetProgress(wf!, progress);
-					interface.player.seek(newPos);
-					interface.playback.position = newPos;
-					setState(() {});
-				},
 			),
 		);
 	}
