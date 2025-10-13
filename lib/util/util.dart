@@ -1,4 +1,3 @@
-// ignore_for_file: non_constant_identifier_names
 int CLAMPI(int min, int max, int value)
 {
 	return (min < max)
@@ -21,4 +20,11 @@ double DMAX(double a, double b) => (a > b) ? a : b;
 String STR_OR(String? input, String fallback) => (input!= null) ? input : fallback;
 int INT_OR(int? input, int fallback) => (input != null) ? input : fallback;
 
+
+String MM_SS_FORMAT_DUR(Duration duration)
+{
+	String min = duration.inMinutes.toString().padLeft(2, '0');
+	String sec = (duration.inSeconds % 60).toString().padLeft(2, '0');
+	return "$min:$sec";
+}
 

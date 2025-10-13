@@ -3,3 +3,5 @@ analyzer:
   errors:
     non_constant_identifier_names: ignore
     constant_identifier_names: ignore
+    avoid_print: ignore
+    prefer_is_empty: ignore

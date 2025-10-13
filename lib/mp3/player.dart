@@ -1,161 +1,215 @@
 import 'package:audioplayers/audioplayers.dart';
-import 'package:audiotags/audiotags.dart';
-import 'package:flutter/material.dart';
-import 'dart:math';
-import 'core/song.dart';
+import 'song.dart';
 import '../util/util.dart';
+import 'dart:math';
 
+class Mp3Player {
+	AudioPlayer audio;
+	List<Track> tracks = [];
 
-class PlayerContext {
-	final AudioPlayer player;
-	final Playback playback;
+	// this is real hacky but idk how to put a proper shuffle w/o reorganizing the way
+	// tracks are handled such that i wouldn't need to create another array for a queue
+	// or for the history
+	List<Track> playlist_original = [];
 
-	PlayerContext({
-		required this.player,
-		required this.playback
-	});
-}
-
-class Playback {
-	final List<Song> songs;
-	int song_index;
+	// volume is normalized from 0..1
+	double volume;
+	int current_index;
 	bool playing;
-	bool shuffle;
-	Duration position;
-  	Duration duration;
+	bool shuffled;
 
-	Playback({
-		required this.songs,
-		this.song_index = 0,
+	Duration current_position;
+
+	Mp3Player({
+	 	required this.audio,
+		this.current_index = 0,
+		this.volume = 0.5,
 		this.playing = false,
-		this.shuffle = false,
-		this.position = Duration.zero,
-    	this.duration = Duration.zero,
+		this.shuffled = false,
+		this.current_position = Duration.zero,
 	});
 }
 
-
-/* --------------------------------------------------------------------------
- * apis for the actual logic without necessarily touching the UI
- * it's supposed to be used together with player_ui.dart in order
- * to interact and change the UI
- */
-
-Future<void> playerInitialize(AudioPlayer player, Playback playback, List<String> songPaths) async
+Future<void> player_set_volume(Mp3Player player, double volume) async
 {
-	await _GETSONGS(playback, songPaths);
-	// preload the first song to avoid ui lagging behind
-	// grabbing the songs to audioplayer and audiotags
-	if (playback.songs.isNotEmpty) {
-		await player.setSource(AssetSource(playback.songs[0].path));
-		playback.songIndex = 0;
-		playback.playing = false;
-		playback.shuffle = false;
-		playback.duration = await player.getDuration() ?? Duration.zero;
-		playback.position = Duration.zero;
+	if (volume > 1 || volume < 0) {
+		print("Volume is not in normalized range [0-1], clamping!");
+		CLAMPD(0, 1, volume);
+	}
+
+	player.audio.setVolume(volume);
+	player.volume = volume;
+}
+
+Future<void> player_load_tracks(Mp3Player player, List<String> track_paths) async
+{
+	for (int i = 0; i < track_paths.length; i++) {
+		Track t = track_create(track_paths[i]);
+		player.tracks.add(t);
+		player.playlist_original.add(t);
+	}
+
+	if (player.tracks.length > 0) {
+		await player.audio.setSource(AssetSource(player.tracks[0].path.replaceFirst("assets/", "")));
 	}
 }
 
-Future<void> playerPlay(AudioPlayer player, Playback playback, int index) async
+Future<void> player_play(Mp3Player player, int index) async
 {
-	index = ICLAMP(0, playback.songs.length - 1, index);
-  	await player.stop();
-  	await player.play(AssetSource(playback.songs[index].path));
-  	playback.playing = true;
-  	playback.songIndex = index;
+	if (player.tracks.length <= index || index < 0) {
+		print("Index out of bounds! clamping");
+		index = CLAMPI(0, player.tracks.length - 1, index);
+	}
+
+	await player.audio.stop();
+	await player.audio.play(AssetSource(player.tracks[index].path.replaceFirst("assets/", "")));
+	player.playing = true;
+	player.current_index = index;
 }
 
- Future<void> playerNext(AudioPlayer player, Playback playback) async
+Future<void> player_next(Mp3Player player) async
 {
-  	int index = (playback.songIndex + 1) % playback.songs.length;
-  	await playerPlay(player, playback, index);
+	int index = (player.current_index + 1) % player.tracks.length;
+	await player_play(player, index);
 }
 
-Future<void> playerPrevious(AudioPlayer player, Playback playback) async
+Future<void> player_previous(Mp3Player player) async
 {
-	int index = (playback.songIndex - 1) % playback.songs.length;
-	await playerPlay(player, playback, index);
+	// to be able to restart song if there's a bit of progress made
+	// and double tap to go to the previous song
+	if (player.current_position.inSeconds > 1) {
+		await player.audio.stop();
+		await player.audio.play(AssetSource(player.tracks[player.current_index].path.replaceFirst("assets/", "")));
+		player.current_position = Duration.zero;
+		return;
+	}
+	int index = (player.current_index - 1) % player.tracks.length;
+	await player_play(player, index);
 }
 
-Future<void> playerTogglePlayPause(AudioPlayer player, Playback playback) async
+Future<void> player_toggle_play_pause(Mp3Player player) async
 {
-	if (playback.playing) {
-		await player.pause();
+	if (player.playing) {
+		await player.audio.pause();
 	} else {
-		await player.resume();
+		await player.audio.resume();
 	}
-	playback.playing = !playback.playing;
+	player.playing = !player.playing;
 }
 
-Future<void> playerPause(AudioPlayer player, Playback playback) async
+Future<void> player_pause(Mp3Player player) async
 {
-	if (playback.playing) {
-		await player.pause();
-		playback.playing = false;
-	}
-}
-
-Future<void> playerResume(AudioPlayer player, Playback playback) async
-{
-	if (!playback.playing) {
-		await player.resume();
-		playback.playing = true;
+	if (player.playing) {
+		await player.audio.pause();
+		player.playing = false;
 	}
 }
 
- Future<void> playerShuffle(AudioPlayer player, Playback playback) async
+Future<void> player_resume(Mp3Player player) async
 {
-	if (playback.songs.length <= 1) return;
-
-	int index = 0;
-
-	do {
-		index = Random().nextInt(playback.songs.length);
-	} while (index == playback.songIndex);
-
-	await playerPlay(player, playback, index);
-}
-
-Future<void> playerDestroy(AudioPlayer player) async
-{
-	await player.stop();
-	await player.dispose();
-}
-
-Song? playerGetSong(Playback playback, int index)
-{
-	if (playback.songs.isEmpty) return null;
-	index = ICLAMP(0, playback.songs.length - 1, index);
-	return playback.songs[index];
-}
-
-Song? playerGetCurrentSong(Playback playback)
-{
-	return playerGetSong(playback, playback.songIndex);
-}
-/* no need to look at these static functions :) */
-Future<void> _GETSONGS(Playback playback, List<String> songPaths) async
-{
-	for (int i = 0; i < songPaths.length; i++) {
-		// print("loading ${songPaths[i]}");
-		Tag? tag = await AudioTags.read(songPaths[i]);
-		SongMetadata metadata = SongMetadata(null, null, null, null, null);
-
-		List<Picture>? pictures = tag?.pictures;
-		metadata.picture = pictures?[0];
-		metadata.title =		STR_OR(tag?.title, "Unknown Track");
-		metadata.trackArtist =	STR_OR(tag?.trackArtist, "Unknown Artist");
-		metadata.album =		STR_OR(tag?.album, "Unknown Album");
-		metadata.year =			INT_OR(tag?.year, 1900);
-
-		Song song = Song(metadata, songPaths[i].replaceFirst("assets/", ""));
-		playback.songs.add(song);
+	if (!player.playing) {
+		await player.audio.resume();
+		player.playing = true;
 	}
 }
 
-/* generic wrapper to refresh UI using setState() */
-Future<void> _WRAPUI(Future<void> Function() fn, VoidCallback refresh) async
+Future<void> player_shuffle_on(Mp3Player player) async
 {
-	await fn();
-	refresh();
+	if (player.shuffled) return;
+
+	player.shuffled = true;
+	if (player.tracks.length < 1) return;
+
+	// int div by 0 for some reason so i'll save state before doing it again
+	// and keep track of current track before shuffling
+	Track current_track = player_current_track(player);
+	player.playlist_original = List.from(player.tracks);
+	tracks_fisher_yates_shuffle(player.tracks);
+
+	// need to modify it right after so that we're still on THAT song
+	// index we're currently on inside the newly randomized array
+	// this is cos i keep running on the same song when pressing ff once or rewind
+	// and that the current track we're on isn't in the same index anymore
+	// only side effect is the history isn't properly tracked when rewind is used :(
+	// which means the only way of fixing this is to implement different arrays for queues,
+	// playlist, and the history (as a stack)
+	for (int i = 0; i < player.tracks.length; i++) {
+		if (player.tracks[i].path == current_track.path) {
+			player.current_index = i;
+			break;
+		}
+	}
+}
+
+// shuffle off simply places back the original playlist with whatever song you currently
+// were on as the current index in the original playlist
+Future<void> player_shuffle_off(Mp3Player player) async
+{
+	if (!player.shuffled) return;
+
+	player.shuffled = false;
+	Track current_track = player_current_track(player);
+	player.tracks = List.from(player.playlist_original);
+
+	// find current track inside original playlist
+	for (int i = 0; i < player.tracks.length; i++) {
+		if (player.tracks[i].path == current_track.path) {
+			player.current_index = i;
+			break;
+		}
+	}
+}
+
+// https://stackoverflow.com/a/12646864
+// https://bost.ocks.org/mike/shuffle/
+// lists are passed by reference so no need to return
+void tracks_fisher_yates_shuffle(List<Track> tracks)
+{
+	int current_index = tracks.length;
+
+	while (current_index != 0) {
+		int random_index = (Random().nextDouble() * current_index).floor();
+		current_index--;
+
+		Track temp = tracks[current_index];
+		tracks[current_index] = tracks[random_index];
+		tracks[random_index] = temp;
+	}
+}
+
+Future<void> player_free(Mp3Player player) async
+{
+	await player.audio.stop();
+	await player.audio.dispose();
+}
+
+Track player_track_get(Mp3Player player, int index)
+{
+	if (player.tracks.length <= index) {
+		print("Index out of bounds while attempting to fetch track! clamping");
+		index = CLAMPI(0, player.tracks.length - 1, index);
+	}
+
+	return player.tracks[index];
+}
+
+Track player_current_track(Mp3Player player)
+{
+	return player_track_get(player, player.current_index);
+}
+
+Future<void> player_seek_to(Mp3Player player, Duration position) async
+{
+	// pause to make seek reliable
+	bool was_playing = player.playing;
+	if (was_playing) {
+		await player_pause(player);
+	}
+
+	await player.audio.seek(position);
+	player.current_position = position;
+
+	if (was_playing) {
+		await player_resume(player);
+	}
 }

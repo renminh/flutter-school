@@ -1,8 +1,7 @@
-import 'package:app_lab/config.dart';
 import 'package:flutter/material.dart';
 import 'theme/dark.dart';
-import 'secret.dart';
-import 'mp3/ui/player.dart' show PlayerPage;
+import 'config.dart';
+import 'mp3/player_page.dart' show PlayerPage;
 import 'common/activity_card.dart';
 void main() =>	runApp(const MainApp());
 
@@ -36,7 +35,7 @@ class Home extends StatelessWidget {
 			appBar: HomeAppBar(),
 			body: screen_width < MOBILE_MAX_WIDTH
 				? build_mobile(context)
-				: build_mobile(context),
+				: build_desktop(context),
 		);
 	}
 }
@@ -72,7 +71,7 @@ List<Widget> build_grid_children(BuildContext context)
 
 	return <Widget>[
 		ActivityCard(
-			color: Color(0xff254887),
+			color: Color(0xff222222),
 			iconPath: "assets/icon/music.png",
 			cardHeader: "Music Player",
 			cardDescription: "Play and listen to music using flutter",
@@ -87,7 +86,7 @@ List<Widget> build_grid_children(BuildContext context)
 		),
 
 		ActivityCard(
-			color: Color(0xff254887),
+			color: Color(0xff222222),
 			iconPath: "assets/icon/none1.png",
 			cardHeader: "Activity 2",
 			cardDescription: "Currently WIP",
@@ -95,7 +94,7 @@ List<Widget> build_grid_children(BuildContext context)
 
 
 		ActivityCard(
-			color: Color(0xff254887),
+			color: Color(0xff222222),
 			iconPath: "assets/icon/none2.png",
 			cardHeader: "Activity 3",
 			cardDescription: "Currently WIP",
@@ -103,7 +102,7 @@ List<Widget> build_grid_children(BuildContext context)
 
 
 		ActivityCard(
-			color: Color(0xff254887),
+			color: Color(0xff222222),
 			iconPath: "assets/icon/none3.png",
 			cardHeader: "Activity 3",
 			cardDescription: "Currently WIP",
@@ -125,15 +124,16 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget{
 			title: Column(
 				mainAxisAlignment: MainAxisAlignment.center,
 				crossAxisAlignment: CrossAxisAlignment.start,
-				children: [
-					Text(SecretText.header),
-					Text(
-						SecretText.headerSubtitle,
-						style: TextStyle(fontSize: 12)
-					),
-				],
+				children: build_app_bar_children(),
 			),
-			leadingWidth: 100,
 		);
   	}
+}
+
+List<Widget> build_app_bar_children()
+{
+	return [
+		Text(APP_HEADER),
+		Text(APP_HEADER_SUBTITLE, style: TextStyle(fontSize: 12)),
+	];
 }

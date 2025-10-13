@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../util/responsive.dart';
 
 class ActivityCard extends StatelessWidget {
 	final String iconPath;
@@ -57,16 +56,16 @@ Widget buildActivityCardIcon(String iconPath)
 
 Widget buildActivityCardDescription(BuildContext context, String? header, String? description)
 {
-	late Responsive responsive = Responsive(context);
+	final screen_width = MediaQuery.sizeOf(context).width;
 
 	return Flexible(
 		flex: 3,
 		child: Column(
 			mainAxisSize: MainAxisSize.min,
 			children: [
-				if (responsive.screenWidth > 180) buildInternalHeader(header),
-				if (responsive.screenWidth > 180) const SizedBox(height: 8),
-				if (responsive.screenWidth > 230) buildInternalDescription(description),
+				if (screen_width > 180) buildInternalHeader(header),
+				if (screen_width > 180) const SizedBox(height: 8),
+				if (screen_width> 230) buildInternalDescription(description),
 			],
 		),
 	);
