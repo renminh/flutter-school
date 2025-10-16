@@ -28,7 +28,9 @@ class Track {
 	String artist;
 	Duration duration;
 	String album;
+	// picture just stores metadata bytes but not the actual finalized cover
 	Picture? picture;
+	late final Image cover;
 
 	Track(
 		this.path,
@@ -51,14 +53,9 @@ Track track_create(String path)
 	Duration duration = data.duration != null ? data.duration! : Duration.zero;
 	Picture? picture = data.pictures.isEmpty ? null : data.pictures[0];
 
-	/*
-	print("Created track and loaded metadata");
-	print("'${data.title}' by ${data.artist}");
-	print("From the album: '${data.album}' ${data.year}");
-	*/
-
 	Track track = Track(path, title, artist, duration, album, picture);
-
+	track.cover = track_cover_build(track);
+	
 	return track;
 }
 

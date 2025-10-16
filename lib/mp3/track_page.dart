@@ -55,8 +55,18 @@ class TrackItem extends StatelessWidget {
 			child: Row(
 				children: [
 					TrackCover(track: track, size: 100),
-					Text(track.title),
-					Text(track.artist)
+					SizedBox(width: 10),
+					Column(
+						mainAxisAlignment: MainAxisAlignment.start,
+						crossAxisAlignment: CrossAxisAlignment.start,
+						children: [
+							Text(track.title),
+							Text(
+								track.artist,
+								style: TextStyle(color: Color.fromARGB(255, 59, 59, 59))
+							)
+						]
+					)
 				],
 			),
 		);

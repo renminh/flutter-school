@@ -19,6 +19,7 @@ class PlayerPageState extends State<PlayerPage> {
   	@override
   	void initState()
 	{
+		super.initState();
 		player_load_tracks(player, ASSET_SONGS);
 		if (MP3_PLAY_FIRST_LOAD) player_play(player, 0);
 	}
@@ -61,7 +62,7 @@ class PlayerPageState extends State<PlayerPage> {
 					children: [
 						TrackCover(track: track, size: cover_size),
 						build_track_info(track),
-						PlayerControls(player: player, on_update: () => setState(() {}),)
+						PlayerControls(player: player, parent_update: () => setState(() {}),)
 					]
 				)
 			)
@@ -70,13 +71,14 @@ class PlayerPageState extends State<PlayerPage> {
 
 	Widget build_desktop(BuildContext context)
 	{
+		double screen_width = MediaQuery.sizeOf(context).width;
 		Track track = player_current_track(player);
 		double cover_size = 400;
 
 		return Center(
 			child: Container(
 				height: 800,
-				width: 700,
+				width: 600,
 				color: const Color.fromARGB(255, 16, 16, 16),
 				child: Column(
 					mainAxisAlignment: MainAxisAlignment.center,
@@ -84,24 +86,24 @@ class PlayerPageState extends State<PlayerPage> {
 					children: [
 						TrackCover(track: track, size: cover_size),
 						build_track_info(track),
-						PlayerControls(player: player, on_update: () => setState(() {}),)
+						PlayerControls(player: player, parent_update: () => setState(() {}),)
 					]
 				)
 			)
 		);
 	}
-}
 
+	Widget build_track_info(Track t)
+	{
+		return Column(
+			children: [
+				Text(
+					t.title,
+					style: TextStyle(fontSize: 20),
+				),
+				Text("${t.artist} • ${t.album}", style: TextStyle(fontSize: 16, color: Color.fromARGB(255, 93, 93, 93))),
+			],
+		);
+	}
 
-Widget build_track_info(Track t)
-{
-	return Column(
-		children: [
-			Text(
-				t.title,
-				style: TextStyle(fontSize: 20),
-			),
-			Text("${t.artist} • ${t.album}", style: TextStyle(fontSize: 16, color: Color.fromARGB(255, 93, 93, 93))),
-		],
-	);
 }

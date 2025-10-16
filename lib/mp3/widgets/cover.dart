@@ -14,7 +14,7 @@ class TrackCover extends StatelessWidget {
 		return SizedBox(
 			width: size,
 			height: size,
-			child: track_cover_build(track)
+			child: track.cover
 		);
 	}
 }

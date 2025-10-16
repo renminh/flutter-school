@@ -1,3 +1,4 @@
+import 'package:app_lab/config.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'song.dart';
 import '../util/util.dart';
@@ -32,11 +33,7 @@ class Mp3Player {
 
 Future<void> player_set_volume(Mp3Player player, double volume) async
 {
-	if (volume > 1 || volume < 0) {
-		print("Volume is not in normalized range [0-1], clamping!");
-		CLAMPD(0, 1, volume);
-	}
-
+	volume = CLAMPD(0, 1, volume);
 	player.audio.setVolume(volume);
 	player.volume = volume;
 }
@@ -56,11 +53,7 @@ Future<void> player_load_tracks(Mp3Player player, List<String> track_paths) asyn
 
 Future<void> player_play(Mp3Player player, int index) async
 {
-	if (player.tracks.length <= index || index < 0) {
-		print("Index out of bounds! clamping");
-		index = CLAMPI(0, player.tracks.length - 1, index);
-	}
-
+	index = CLAMPI(0, player.tracks.length - 1, index);
 	await player.audio.stop();
 	await player.audio.play(AssetSource(player.tracks[index].path.replaceFirst("assets/", "")));
 	player.playing = true;
@@ -75,11 +68,9 @@ Future<void> player_next(Mp3Player player) async
 
 Future<void> player_previous(Mp3Player player) async
 {
-	// to be able to restart song if there's a bit of progress made
-	// and double tap to go to the previous song
-	if (player.current_position.inSeconds > 1) {
-		await player.audio.stop();
-		await player.audio.play(AssetSource(player.tracks[player.current_index].path.replaceFirst("assets/", "")));
+	if (player.current_position.inSeconds > RESTART_THRESHOLD) {
+		await player_pause(player);
+		await player_play(player, player.current_index);
 		player.current_position = Duration.zero;
 		return;
 	}
@@ -87,14 +78,13 @@ Future<void> player_previous(Mp3Player player) async
 	await player_play(player, index);
 }
 
-Future<void> player_toggle_play_pause(Mp3Player player) async
+Future<void> player_toggle_resume_pause(Mp3Player player) async
 {
 	if (player.playing) {
-		await player.audio.pause();
+		await player_pause(player);
 	} else {
-		await player.audio.resume();
+		await player_resume(player);
 	}
-	player.playing = !player.playing;
 }
 
 Future<void> player_pause(Mp3Player player) async
@@ -157,6 +147,15 @@ Future<void> player_shuffle_off(Mp3Player player) async
 			player.current_index = i;
 			break;
 		}
+	}
+}
+
+Future<void> player_shuffle_toggle(Mp3Player player) async
+{
+	if (player.shuffled) {
+		player_shuffle_off(player);
+	} else {
+		player_shuffle_on(player);
 	}
 }
 

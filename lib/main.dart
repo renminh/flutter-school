@@ -40,7 +40,7 @@ class Home extends StatelessWidget {
 	}
 }
 
-Widget build_mobile(context)
+Widget build_mobile(BuildContext context)
 {
 	return GridView.count(
 		primary: false,
@@ -53,7 +53,7 @@ Widget build_mobile(context)
 	);
 }
 
-Widget build_desktop(context)
+Widget build_desktop(BuildContext context)
 {
 	return GridView.count(
 		primary: false,
@@ -68,7 +68,6 @@ Widget build_desktop(context)
 
 List<Widget> build_grid_children(BuildContext context)
 {
-
 	return <Widget>[
 		ActivityCard(
 			color: Color(0xff222222),
@@ -109,6 +108,7 @@ List<Widget> build_grid_children(BuildContext context)
 		),
 	];
 }
+
 class HomeAppBar extends StatelessWidget implements PreferredSizeWidget{
   	const HomeAppBar({super.key});
 
@@ -128,12 +128,12 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget{
 			),
 		);
   	}
-}
 
-List<Widget> build_app_bar_children()
-{
-	return [
-		Text(APP_HEADER),
-		Text(APP_HEADER_SUBTITLE, style: TextStyle(fontSize: 12)),
-	];
+	List<Widget> build_app_bar_children()
+	{
+		return [
+			Text(APP_HEADER),
+			Text(APP_HEADER_SUBTITLE, style: TextStyle(fontSize: 12)),
+		];
+	}
 }

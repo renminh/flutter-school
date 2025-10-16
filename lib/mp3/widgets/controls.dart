@@ -49,41 +49,33 @@ Widget pipe_icon(Image image)
 	);
 }
 
-// i could easily just put this inside the PlayerPageState but i feel it's prolly necessary to put it out on
-// its own and just use function pointers to set state of parent on any changes using callbacks
-// then internally use setState so i don't need to rebuild the whole page on certain operations
-// https://medium.com/@paalu.heing/efficient-communication-between-parent-and-child-widgets-in-flutter-c551f8e5dbeb
 class PlayerControls extends StatefulWidget {
 	final Mp3Player player;
-	final VoidCallback on_update;
+	final VoidCallback parent_update;
 
 	const PlayerControls({
 		super.key,
 		required this.player,
-		required this.on_update
+		required this.parent_update
 	});
 
 	@override
 	PlayerControlsState createState() => PlayerControlsState();
 }
 
-// accessing parent widgets from stateful widget
-// https://docs.flutter.dev/get-started/fundamentals/state-management
-//
-// for getting the seeker and volume controls:
-// https://dev.to/bigbott/flutter-play-audio-with-the-progress-bar-and-a-bit-more-1g5n
-// https://api.flutter.dev/flutter/material/Slider-class.html
 class PlayerControlsState extends State<PlayerControls> {
 	late StreamSubscription<Duration> position_stream;
 	late StreamSubscription<void> complete_stream;
+	late Mp3Player player;
 
 	@override
 	void initState()
 	{
-		audio_stream_init(widget.player);
+		super.initState();
+		player = widget.player;
+		audio_stream_init(player);
 	}
-
-
+	
 	// streams available are over at
 	// https://github.com/bluefireteam/audioplayers/blob/main/getting_started.md
 	void audio_stream_init(Mp3Player player)
@@ -94,7 +86,7 @@ class PlayerControlsState extends State<PlayerControls> {
 
 		complete_stream = player.audio.onPlayerComplete.listen((_) async {
 			await player_next(player);
-			widget.on_update();
+			widget.parent_update();
 		});
 	}
 
@@ -109,8 +101,6 @@ class PlayerControlsState extends State<PlayerControls> {
 	@override
   	Widget build(BuildContext context)
 	{
-		Mp3Player player = widget.player;
-
 		return Column(
 			crossAxisAlignment: CrossAxisAlignment.center,
 			mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -122,7 +112,7 @@ class PlayerControlsState extends State<PlayerControls> {
 					children: [
 						build_library_button(player, 20),
 						build_rewind_button(player, 20),
-						build_play_pause_button(player, 24),
+						build_resume_pause_button(player, 28),
 						build_ff_button(player, 20),
 						build_shuffle_button(player, 20),
 				]),
@@ -137,30 +127,6 @@ class PlayerControlsState extends State<PlayerControls> {
 		double slide_pos = player.current_position.inSeconds.toDouble();
 		double slide_dur = player_current_track(player).duration.inSeconds.toDouble();
 
-		/*
-		return Column(
-			children: [
-				Slider(
-					value: slide_pos,
-					min: 0.0,
-					max: slide_dur,
-					activeColor: Colors.white,
-					inactiveColor: Colors.grey,
-					onChanged: (value) {
-						player_seek_to(player, Duration(seconds: value.toInt()));
-						setState(() {});
-					}
-				),
-				Row(
-					children: [
-						Text(MM_SS_FORMAT_DUR(player.current_position)),
-						SizedBox(width: 100),
-						Text(MM_SS_FORMAT_DUR(player_current_track(player).duration)),
-					],
-				),
-			],
-		);
-		*/
 		return Row(
 			crossAxisAlignment: CrossAxisAlignment.center,
 			mainAxisAlignment: MainAxisAlignment.center,
@@ -172,8 +138,8 @@ class PlayerControlsState extends State<PlayerControls> {
 					max: slide_dur,
 					activeColor: Colors.white,
 					inactiveColor: Colors.grey,
-					onChanged: (value) {
-						player_seek_to(player, Duration(seconds: value.toInt()));
+					onChanged: (value) async {
+						await player_seek_to(player, Duration(seconds: value.toInt()));
 						setState(() {});
 					}
 				),
@@ -188,7 +154,7 @@ class PlayerControlsState extends State<PlayerControls> {
 			icon: icon_build(ICN_FF, size),
 			onPressed: () async {
 				await player_next(player);
-				widget.on_update();
+				widget.parent_update();
 			},
 		);
 	}
@@ -199,7 +165,7 @@ class PlayerControlsState extends State<PlayerControls> {
 			icon: icon_build(ICN_REWIND, size),
 			onPressed: () async {
 				await player_previous(player);
-				widget.on_update();
+				widget.parent_update();
 			},
 		);
 	}
@@ -216,7 +182,7 @@ class PlayerControlsState extends State<PlayerControls> {
 							player: player,
 							on_tap: (index) async {
 								await player_play(player, index);
-								widget.on_update();
+								widget.parent_update();
 							}
 						)
 					),
@@ -225,14 +191,16 @@ class PlayerControlsState extends State<PlayerControls> {
 		);
 	}
 
-	Widget build_play_pause_button(Mp3Player player, double size)
+	Widget build_resume_pause_button(Mp3Player player, double size)
 	{
+		Widget icon = player.playing
+			? icon_build(ICN_PAUSE, size)
+			: icon_build(ICN_PLAY, size);
+
 		return IconButton(
-			icon: player.playing
-				? icon_build(ICN_PAUSE, size)
-				: icon_build(ICN_PLAY, size),
+			icon: icon,
 			onPressed: () async {
-				await player_toggle_play_pause(player);
+				await player_toggle_resume_pause(player);
 				setState(() {});
 			},
 		);
@@ -240,16 +208,14 @@ class PlayerControlsState extends State<PlayerControls> {
 
 	Widget build_shuffle_button(Mp3Player player, double size)
 	{
+		Widget icon = player.shuffled
+			? icon_build(ICN_SHUFFLE, size)
+			: icon_build(ICN_NO_SHUFFLE, size);
+
 		return IconButton(
-			icon: player.shuffled
-				? icon_build(ICN_SHUFFLE, size)
-				: icon_build(ICN_NO_SHUFFLE, size),
+			icon: icon,
 			onPressed: () async {
-				if (player.shuffled) {
-					await player_shuffle_off(player);
-				} else {
-					await player_shuffle_on(player);
-				}
+				player_shuffle_toggle(player);
 				setState(() {});
 			},
 		);
@@ -257,13 +223,15 @@ class PlayerControlsState extends State<PlayerControls> {
 
 	Widget build_volume_slider(Mp3Player player)
 	{
+		Widget vol_down_icon = player.volume == 0.0
+			? icon_build(ICN_VOL_MUTE, 24)
+			: icon_build(ICN_VOL_DOWN, 24);
+
 		return 	Row(
 			crossAxisAlignment: CrossAxisAlignment.center,
 			mainAxisAlignment: MainAxisAlignment.center,
 			children: [
-				player.volume == 0.0
-					? icon_build(ICN_VOL_MUTE, 24)
-					: icon_build(ICN_VOL_DOWN, 24),
+				vol_down_icon,
 				Slider(
 					value: player.volume,
 					min: 0,
