@@ -1,4 +1,5 @@
 import 'package:app_lab/config.dart';
+import 'package:app_lab/mp3/data/tracks.dart';
 import 'package:app_lab/util/util.dart';
 import 'package:flutter/material.dart';
 import 'package:audioplayers/audioplayers.dart';
@@ -20,7 +21,8 @@ class PlayerPageState extends State<PlayerPage> {
   	void initState()
 	{
 		super.initState();
-		player_load_tracks(player, ASSET_SONGS);
+		//player_load_tracks(player, ASSET_SONGS);
+		player_load_tracks(player, TRACK_DATA);
 		if (MP3_PLAY_FIRST_LOAD) player_play(player, 0);
 	}
 

@@ -1,4 +1,5 @@
 import 'package:app_lab/config.dart';
+import 'package:app_lab/mp3/data/tracks.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'song.dart';
 import '../util/util.dart';
@@ -38,10 +39,10 @@ Future<void> player_set_volume(Mp3Player player, double volume) async
 	player.volume = volume;
 }
 
-Future<void> player_load_tracks(Mp3Player player, List<String> track_paths) async
+Future<void> player_load_tracks(Mp3Player player, List<TrackData> track_data) async
 {
-	for (int i = 0; i < track_paths.length; i++) {
-		Track t = track_create(track_paths[i]);
+	for (int i = 0; i < track_data.length; i++) {
+		Track t = track_create(track_data[i]);
 		player.tracks.add(t);
 		player.playlist_original.add(t);
 	}
@@ -50,6 +51,7 @@ Future<void> player_load_tracks(Mp3Player player, List<String> track_paths) asyn
 		await player.audio.setSource(AssetSource(player.tracks[0].path.replaceFirst("assets/", "")));
 	}
 }
+
 
 Future<void> player_play(Mp3Player player, int index) async
 {

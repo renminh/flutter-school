@@ -1,8 +1,4 @@
-import 'dart:typed_data';
-
-import 'package:audio_metadata_reader/audio_metadata_reader.dart';
-import 'dart:io';
-
+import 'package:app_lab/mp3/data/tracks.dart';
 import 'package:flutter/widgets.dart';
 
 const List<String> ASSET_SONGS = [
@@ -28,8 +24,6 @@ class Track {
 	String artist;
 	Duration duration;
 	String album;
-	// picture just stores metadata bytes but not the actual finalized cover
-	Picture? picture;
 	late final Image cover;
 
 	Track(
@@ -38,38 +32,23 @@ class Track {
 		this.artist,
 		this.duration,
 		this.album,
-		this.picture
 	);
 }
 
-Track track_create(String path)
+Track track_create(TrackData data)
 {
-	final loaded_file = File(path);
-	AudioMetadata data = readMetadata(loaded_file, getImage: true);
-
-	String title = data.title != null ? data.title! : "Unknown Title";
-	String artist = data.artist != null ? data.artist! : "Unkown Artist";
-	String album = data.album != null ? data.album! : "Unkown Album";
-	Duration duration = data.duration != null ? data.duration! : Duration.zero;
-	Picture? picture = data.pictures.isEmpty ? null : data.pictures[0];
-
-	Track track = Track(path, title, artist, duration, album, picture);
-	track.cover = track_cover_build(track);
-	
+	Track track = Track(data.path, data.title, data.artist, data.duration, data.album);
+	print("created track: ${data.title}");
+	track.cover = track_cover_build(track, data.cover_path);
 	return track;
 }
 
-// using image bytes from data, we can construct the cover using flutter's Image.memory constructor
-// It displays an image stream taken from an array of size Uint8
-// https://stackoverflow.com/a/65615984
-// https://api.flutter.dev/flutter/widgets/Image/Image.memory.html
-Image track_cover_build(Track t)
+Image track_cover_build(Track t, String? path)
 {
-	Picture? picture = t.picture;
-	if (picture == null) {
+	if (path == null) {
 		print("No picture was provided for track, fallback to default cover");
 		return Image.asset("assets/icon/default_album_cover.jpeg");
 	}
 
-	return Image.memory(Uint8List.fromList(picture.bytes), width: 128, height: 128);
+	return Image.asset(path, width: 128, height: 128);
 }

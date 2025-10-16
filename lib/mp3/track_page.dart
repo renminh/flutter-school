@@ -63,7 +63,7 @@ class TrackItem extends StatelessWidget {
 							Text(track.title),
 							Text(
 								track.artist,
-								style: TextStyle(color: Color.fromARGB(255, 59, 59, 59))
+								style: TextStyle(color: Color.fromARGB(255, 91, 91, 91))
 							)
 						]
 					)
